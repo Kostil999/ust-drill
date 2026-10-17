@@ -229,6 +229,29 @@ button:focus-visible{outline:2px solid var(--form);outline-offset:2px}
 .fsub{margin-top:10px;display:flex;flex-direction:column;gap:10px;border-left:2px dashed var(--rule);padding-left:10px}
 .fsr{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start}
 .fsr .fq{font-size:14px;padding-top:2px}
+
+.q.qmono{font-family:var(--f-mono);font-size:21px;font-weight:600;color:var(--form)}
+.q.qcase{font-family:var(--f-body);font-stretch:100%;font-size:18px;font-weight:600;line-height:1.4}
+.nres{background:var(--sheet);border:1.5px solid var(--rule);border-left:5px solid var(--form);padding:10px 12px;margin-bottom:16px;display:flex;flex-direction:column;gap:2px}
+.nres b{font-size:16px}
+.nfill{margin-top:8px;background:var(--sheet);border:2px solid var(--form);padding:16px 12px;font-family:var(--f-mono);font-size:19px;line-height:2.4;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:2px}
+.nfill span{white-space:pre}
+.ns{font:inherit;font-weight:600;text-align:center;border:0;border-bottom:2.5px solid var(--form);background:var(--form-soft);color:var(--ink);padding:0 2px;border-radius:0;min-width:2.6ch;-webkit-appearance:none;appearance:none}
+.ns:focus{outline:2px solid var(--form);outline-offset:1px}
+.ns.right{border-color:var(--form);color:var(--form)}
+.ns.wrong{border-color:var(--red);background:var(--red-soft);color:var(--red);text-decoration:line-through}
+.tcard .thead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.tcard h2{margin:0}
+.tpc{font-family:var(--f-mono);font-size:22px;color:var(--muted)}
+.tpc.ok{color:var(--form)}
+.tbar{position:relative;height:12px;background:var(--rule);margin-top:10px}
+.tbar i{position:absolute;inset:0 auto 0 0;background:var(--form)}
+.tmark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+.tmark::after{content:"70 %";position:absolute;top:-16px;left:-12px;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.tmeta{margin-top:10px!important;font-size:13px!important}
+.ghost-btn.open{border-color:var(--form);color:var(--form);font-weight:700}
+.ghost-btn[disabled]{opacity:.7;cursor:default}
+.tabs button{letter-spacing:.03em;font-size:11px}
 </style>
 </head>
 <body>
@@ -924,6 +947,49 @@ function buildReview(){return weak(dueIds()).slice(0,10).map(exFromId)}
 function caseUnits(){return ALLU.filter(u=>done(u)>=3)}
 function buildCaseMix(){return shuffle(caseUnits().flatMap(u=>u.cases.map((_,j)=>`${u.id}:c${j}`))).slice(0,8).map(exFromId)}
 
+/* ============ NORMEN-TEST ============ */
+const TESTC=()=>COURSES.filter(c=>c.id!=='start');
+const PASS=70, NTLEN=20, NCLEN=8;
+function ntIds(c){const out=[];c.units.forEach(u=>u.steps.forEach((s,i)=>{out.push(`n:${u.id}:${i}:p`);out.push(`n:${u.id}:${i}:k`)}));return out}
+function ntPct(c){const q=ntIds(c),nt=S.nt||{};return Math.round(q.filter(id=>nt[id]===1).length/q.length*100)}
+function exNT(id){
+  const [,uid,i,t]=id.split(':'), u=unitById(uid), s=u.steps[+i], c=u.course, isP=t==='p';
+  const correct=isP?s.p:s.k, f=x=>isP?x.p:x.k;
+  let d=shuffle([...new Set(u.steps.map(f))].filter(x=>x!==correct)).slice(0,2);
+  d=d.concat(shuffle([...new Set(c.units.flatMap(x=>x.steps.map(f)))].filter(x=>x!==correct&&!d.includes(x))).slice(0,3-d.length));
+  return {id:null,nt:id,unit:u,si:+i,kind:'choice',again:true,label:isP?'Welche Norm regelt das?':'Was regelt diese Norm?',q:isP?s.k:s.p,qmono:!isP,hint:u.t,opts:shuffle([correct,...d]),ans:correct,mono:isP,expl:stepCard(s)};
+}
+function buildNT(c){
+  const nt=S.nt||{}, ids=shuffle(ntIds(c));
+  const rank=id=>nt[id]===0?0:nt[id]===undefined?1:2;
+  return ids.sort((a,b)=>rank(a)-rank(b)).slice(0,NTLEN).map(exNT);
+}
+function stripNorm(o){return o.replace(/[\s,–(-]*(§§?|R)\s*\d.*$/,'').trim()}
+function normParts(p){
+  const parts=[],re=/(Buchst\. )([a-z])\b|(\d+[a-z]?(?:\.\d+)?)/g;let last=0,m;
+  while((m=re.exec(p))){
+    if(m[2]){parts.push({t:p.slice(last,m.index)+m[1]});parts.push({s:m[2]})}
+    else{parts.push({t:p.slice(last,m.index)});parts.push({s:m[3]})}
+    last=re.lastIndex;
+  }
+  parts.push({t:p.slice(last)});
+  return parts.filter(x=>x.s!==undefined||x.t);
+}
+function ncPool(c){return c.units.flatMap(u=>u.cases.map((_,j)=>({u,j}))).filter(({u,j})=>ruleSteps(exCase(u,j)).length)}
+function buildNC(c){
+  const out=[];
+  shuffle(ncPool(c)).slice(0,NCLEN).forEach(({u,j})=>{
+    const cs=u.cases[j], si=ruleSteps(exCase(u,j))[0], st=u.steps[si];
+    const so=cs.o.map(stripNorm), clean=new Set(so).size===so.length&&so.every(v=>v&&!/§/.test(v));
+    const res=stripNorm(cs.o[cs.a])||cs.o[cs.a];
+    if(clean)out.push({id:null,unit:u,ci:j,kind:'choice',again:true,hideExpl:true,label:'Fall · 1. Lösung',q:cs.q,hint:u.t,opts:shuffle(so),ans:so[cs.a]});
+    out.push({id:null,unit:u,ci:j,si,kind:'normfill',again:true,label:clean?'Fall · 2. Norm':'Fall · Norm',q:cs.q,res,parts:normParts(st.p),norm:st.p,
+      expl:`<span class="p">${esc(st.p)}</span> — ${esc(st.ru)}<br>${esc(cs.e)}`});
+  });
+  return out;
+}
+const normEq=(a,b)=>String(a).trim().toLowerCase().replace(',','.')===String(b).trim().toLowerCase();
+
 /* ============ SOUND ============ */
 let AC=null;
 function sound(kind){
@@ -969,6 +1035,7 @@ function ruleHTML(x){
 const ICON={
   path:'<svg viewBox="0 0 24 24"><path d="M5 4h4v4H5zM15 10h4v4h-4zM5 16h4v4H5zM9 6h3a2 2 0 0 1 2 2v2M15 14v2a2 2 0 0 1-2 2H9"/></svg>',
   review:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/><path d="M12 8v4l3 2"/></svg>',
+  test:'<svg viewBox="0 0 24 24"><path d="M9 5h10M9 12h10M9 19h10M4 4l1.5 1.5L8 3M4 11l1.5 1.5L8 10M4 18l1.5 1.5L8 17"/></svg>',
   schema:'<svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/></svg>',
   x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   on:'<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',
@@ -1030,6 +1097,17 @@ function renderHome(){
       <button class="ghost-btn" id="toggleMute">${S.mute?'Звук выключен — включить':'Звук включён — выключить'}</button>
       <p class="note">Если звука нет на iPhone, проверь переключатель «Без звука» сбоку телефона.</p>
       <button class="ghost-btn" id="reset">Сбросить прогресс</button></div>`;
+  }else if(tab==='test'){
+    body=`<div class="card intro-s"><div class="eyebrow">Как экзамен на права</div><h2>Тест на нормы</h2>
+      <p>Выучи нормы наизусть: какой параграф, абзац, предложение и номер регулирует каждое понятие. По каждому налогу ведётся процент освоения. При <b>${PASS} %</b> открываются <b>Fälle с нормами</b>: решаешь случай и сам вписываешь номера в «§ __ Abs. __».</p></div>`+
+    TESTC().map(c=>{
+      const pc=ntPct(c), tot=ntIds(c).length, ok=Math.round(pc*tot/100), open=pc>=PASS, last=(S.ntLast||{})[c.id], wrong=ntIds(c).filter(id=>(S.nt||{})[id]===0).length;
+      return `<div class="card tcard"><div class="thead"><h2>${esc(c.t)}</h2><b class="tpc ${open?'ok':''}">${pc} %</b></div>
+        <div class="tbar"><i style="width:${pc}%"></i><span class="tmark" style="left:${PASS}%"></span></div>
+        <p class="tmeta">Освоено ${ok} из ${tot} вопросов${wrong?` · с ошибками: ${wrong}`:''}${last?` · последний тест: ${last}`:''}</p>
+        <button class="big-btn" data-nt="${c.id}">Тест · ${NTLEN} вопросов</button>
+        <button class="ghost-btn ${open?'open':''}" data-nc="${c.id}" ${open?'':'disabled'}>${open?`Fälle с нормами · ${ncPool(c).length} задач`:`Fälle с нормами откроются при ${PASS} %`}</button></div>`;
+    }).join('');
   }else{
     body=`<div class="card intro-s"><h2>Схемы проверки</h2><p>Каждый шаг: немецкий термин, норма и вопрос по-русски, который нужно себе задать. Нажми «Проверь себя» — термины и нормы скроются, останутся вопросы. Вспомни шаг и открой его касанием.</p></div>`+
     COURSES.map(c=>{
@@ -1047,6 +1125,7 @@ function renderHome(){
   <nav class="tabs">
     <button data-tab="path" class="${tab==='path'?'on':''}">${ICON.path}Путь</button>
     <button data-tab="review" class="${tab==='review'?'on':''}">${ICON.review}Повторить${badge?`<span class="badge">${badge}</span>`:''}</button>
+    <button data-tab="test" class="${tab==='test'?'on':''}">${ICON.test}Тест</button>
     <button data-tab="schemas" class="${tab==='schemas'?'on':''}">${ICON.schema}Схемы</button>
   </nav>`;
 }
@@ -1055,6 +1134,8 @@ app.addEventListener('click',e=>{
   const t=e.target.closest('[data-tab]'); if(t){tab=t.dataset.tab;renderHome();window.scrollTo(0,0);return}
   const n=e.target.closest('[data-unit]');
   if(n){const u=unitById(n.dataset.unit);if(!unlocked(u))return;startLesson(buildUnitLesson(u),u);return}
+  const ntb=e.target.closest('[data-nt]'); if(ntb){const c=COURSES.find(x=>x.id===ntb.dataset.nt);startLesson(buildNT(c),null,'nt');L.course=c;return}
+  const ncb=e.target.closest('[data-nc]'); if(ncb&&!ncb.disabled){const c=COURSES.find(x=>x.id===ncb.dataset.nc);const ex=buildNC(c);if(ex.length){startLesson(ex,null,'nc');L.course=c}return}
   if(e.target.closest('#startReview')){const ex=buildReview();if(ex.length)startLesson(ex,null,'review');return}
   if(e.target.closest('#startCases')){const ex=buildCaseMix();if(ex.length)startLesson(ex,null,'cases');return}
   if(e.target.closest('#toggleMute')){S.mute=!S.mute;save();if(!S.mute)sound('ok');renderHome();return}
@@ -1070,7 +1151,7 @@ app.addEventListener('click',e=>{
 
 /* ============ LESSON ============ */
 function startLesson(ex,unit,mode){
-  L={ex,pos:0,unit,mode,firstTry:0,graded:new Set(),pick:null,order:[],checked:false,m:null};
+  L={ex,pos:0,unit,mode,firstTry:0,graded:new Set(),pick:null,order:[],checked:false,m:null,fill:{},cnt:0,okc:0};
   renderLesson();
 }
 const isInfo=x=>x.kind==='theory'||x.kind==='teach';
@@ -1092,8 +1173,12 @@ function renderLesson(){
       <div class="tde"><span class="eyebrow">Для экзамена</span><p>${esc(s.d)}</p></div></div>`;
     foot=`<div class="lfoot"><div class="inner"><button class="big-btn" id="next">Понятно</button></div></div>`;
   }else{
-    inner=`<div class="qlabel"><span class="tag">${esc(x.label)}</span></div><div class="q">${esc(x.q)}</div><div class="qhint">${esc(x.hint||'')}</div>`;
+    inner=`<div class="qlabel"><span class="tag">${esc(x.label)}</span></div><div class="q ${x.qmono?'qmono':''} ${x.kind==='normfill'||x.label.startsWith('Fall')?'qcase':''}">${esc(x.q)}</div><div class="qhint">${esc(x.hint||'')}</div>`;
     if(x.kind==='choice')inner+=optBtns(x);
+    else if(x.kind==='normfill'){
+      inner+=`<div class="nres"><span class="eyebrow">Ergebnis</span><b>${esc(x.res)}</b></div><div class="eyebrow">Begründung — впиши номера</div>
+      <div class="nfill">${x.parts.map((pt,k)=>pt.s!==undefined?`<input class="ns ${L.checked?(normEq(L.fill[k]||'',pt.s)?'right':'wrong'):''}" data-ns="${k}" value="${esc(L.fill[k]||'')}" style="width:${Math.max(2,pt.s.length)+1.6}ch" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" ${L.checked?'disabled':''} aria-label="Номер">`:`<span>${esc(pt.t)}</span>`).join('')}</div>`;
+    }
     else if(x.kind==='gap'){
       inner+=`<div class="form">${x.unit.steps.map((s,i)=>`<div class="frow ${i===x.gap?'gap':''}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="v">${i===x.gap?(L.pick?esc(L.pick):'?'):esc(s.k)}</span></div>`).join('')}</div>`+optBtns(x);
     }else if(x.kind==='order'){
@@ -1107,26 +1192,32 @@ function renderLesson(){
     }
     if(!L.checked){
       if(x.kind==='match')foot=`<div class="lfoot"><div class="inner"><p class="mhelp">${L.m.err?`Ошибок: ${L.m.err}`:'Найди все пары'}</p></div></div>`;
-      else{const ready=x.kind==='order'?L.order.length===x.ans.length:L.pick!==null;
+      else{const ready=x.kind==='order'?L.order.length===x.ans.length:x.kind==='normfill'?x.parts.every((p,k)=>p.s===undefined||(L.fill[k]||'').trim()):L.pick!==null;
         foot=`<div class="lfoot"><div class="inner"><button class="big-btn" id="check" ${ready?'':'disabled'}>Проверить</button></div></div>`;}
     }else{
       const ok=L.lastOk;
       let ex='';
       if(x.kind==='match')ex=ok?'Все пары найдены без ошибок.':`Все пары найдены, ошибок: ${L.m.err}. Эти понятия ещё встретятся.`;
+      else if(x.hideExpl)ex=`${ok?'':`Правильно: <b>${esc(x.ans)}</b><br>`}Теперь обоснуй ответ нормой.`;
+      else if(x.kind==='normfill')ex=`${ok?'':`Правильная норма: <b class="mono">${esc(x.norm)}</b><br>`}${x.expl}`;
       else ex=`${!ok&&x.kind!=='order'&&!x.tf?`Правильно: <b>${esc(x.ans)}</b><br>`:''}${!ok&&x.kind==='order'?'Правильный порядок:<br>':''}${x.expl}${L.requeued?'<br><i>Этот вопрос вернётся в конце урока.</i>':''}`;
       foot=`<div class="lfoot ${ok?'ok':'bad'}"><div class="inner"><p class="verdict">${ok?pick(['Верно!','Отлично!','Так держать!','Richtig!']):'Не совсем'}</p>
-        <p class="expl">${ex}</p><div class="frowbtn">${!ok?'<button class="rule-btn" id="ruleBtn">Правило</button>':''}<button class="big-btn" id="next">Дальше</button></div></div></div>`;
+        <p class="expl">${ex}</p><div class="frowbtn">${!ok&&!x.hideExpl?'<button class="rule-btn" id="ruleBtn">Правило</button>':''}<button class="big-btn" id="next">Дальше</button></div></div></div>`;
     }
   }
   const pct=L.pos/L.ex.length*100;
   let el=document.querySelector('.lesson');
-  if(!el){el=document.createElement('div');el.className='lesson';document.body.appendChild(el);el.addEventListener('click',lessonClick)}
+  if(!el){el=document.createElement('div');el.className='lesson';document.body.appendChild(el);el.addEventListener('click',lessonClick);
+    el.addEventListener('input',e=>{const i=e.target.dataset&&e.target.dataset.ns;if(i===undefined||!L)return;L.fill[+i]=e.target.value;const x=L.ex[L.pos];
+      const b=el.querySelector('#check');if(b)b.disabled=!x.parts.every((p,k)=>p.s===undefined||(L.fill[k]||'').trim())});
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.ns!==undefined){const ins=[...el.querySelectorAll('.ns')],k=ins.indexOf(e.target);if(k<ins.length-1)ins[k+1].focus();else{e.target.blur();const b=el.querySelector('#check');if(b&&!b.disabled)b.click()}}})}
   el.innerHTML=`<div class="lhead"><button class="x" id="quit" aria-label="Выйти">${ICON.x}</button><div class="prog"><i style="width:${pct}%"></i></div><span class="cnt">${L.pos+1}/${L.ex.length}</span><button class="x" id="mute" aria-label="Звук">${S.mute?ICON.off:ICON.on}</button></div>
   <div class="lbody"><div class="inner">${inner}</div></div>${foot}${L.rule?`<div class="sheet-bg" id="ruleBg"><div class="sheet"><button class="x sheet-x" id="ruleX" aria-label="Закрыть">${ICON.x}</button>${ruleHTML(x)}<button class="big-btn" id="ruleX2">Понятно</button></div></div>`:''}`;
   const b=el.querySelector('.lbody'); if(b&&!L.keepScroll)b.scrollTop=0; L.keepScroll=false;
 }
 function afterCheck(x,ok){
-  L.lastOk=ok;L.checked=true;L.requeued=false;sound(ok?'ok':'bad');
+  L.lastOk=ok;L.checked=true;L.requeued=false;sound(ok?'ok':'bad');L.cnt++;if(ok)L.okc++;
+  if(x.nt){S.nt=S.nt||{};S.nt[x.nt]=ok?1:0}
   if(x.id&&!L.graded.has(x.id)){grade(x.id,ok);L.graded.add(x.id);if(ok)L.firstTry++}
   if(!ok&&x.kind!=='match'&&!x.again){
     const again=Object.assign({},x,{again:true});
@@ -1143,7 +1234,7 @@ function lessonClick(e){
   if(L.rule)return;
   const x=L.ex[L.pos];
   if(e.target.closest('#next')){
-    L.pos++;L.pick=null;L.order=[];L.checked=false;L.m=null;L.rule=false;
+    L.pos++;L.pick=null;L.order=[];L.checked=false;L.m=null;L.rule=false;L.fill={};
     if(L.pos>=L.ex.length)finishLesson();else renderLesson();return;
   }
   if(L.checked||isInfo(x))return;
@@ -1160,13 +1251,15 @@ function lessonClick(e){
     renderLesson();return;
   }
   if(e.target.closest('#check')){
-    const ok=x.kind==='order'?L.order.every((ti,i)=>x.toks[ti]===x.ans[i]):L.pick===x.ans;
+    const ok=x.kind==='order'?L.order.every((ti,i)=>x.toks[ti]===x.ans[i]):x.kind==='normfill'?x.parts.every((p,k)=>p.s===undefined||normEq(L.fill[k]||'',p.s)):L.pick===x.ans;
     afterCheck(x,ok);
   }
 }
 function finishLesson(){
-  const n=L.graded.size, acc=n?Math.round(L.firstTry/n*100):100;
-  const gained=10+L.firstTry*2+(L.unit?0:5), t=today();
+  const tm=L.mode==='nt'||L.mode==='nc';
+  const n=L.graded.size, acc=tm?Math.round(L.okc/Math.max(1,L.cnt)*100):n?Math.round(L.firstTry/n*100):100;
+  const gained=tm?10+L.okc:10+L.firstTry*2+(L.unit?0:5), t=today();
+  if(L.mode==='nt'){S.ntLast=S.ntLast||{};S.ntLast[L.course.id]=`${L.okc}/${L.cnt}`}
   if(S.xpDay!==t){S.xpDay=t;S.dayXp=0}
   S.dayXp+=gained;S.xp+=gained;
   if(S.lastDay!==t){S.streak=(S.lastDay===t-1)?S.streak+1:1;S.lastDay=t}
@@ -1182,9 +1275,10 @@ function finishLesson(){
   }
   document.querySelector('.lesson').innerHTML=`<div class="lbody"><div class="inner result">
     <div class="stamp">${acc>=90?'Bestanden':acc>=60?'Gut gemacht':'Weiter üben'}</div>
-    <p class="rsub">${L.unit?`${esc(L.unit.t)} · ${lvName}`:L.mode==='cases'?'Fälle-Mix завершён':'Повторение завершено'}</p>
+    <p class="rsub">${L.unit?`${esc(L.unit.t)} · ${lvName}`:L.mode==='cases'?'Fälle-Mix завершён':tm?`${esc(L.course.t)} · ${L.mode==='nt'?'тест на нормы':'Fälle с нормами'} · ${L.okc} из ${L.cnt}`:'Повторение завершено'}</p>
     <div class="rgrid"><div><b>+${gained}</b><span>XP</span></div><div><b>${acc}%</b><span>с первой попытки</span></div><div><b>${streakNow()}</b><span>серия</span></div></div>
     ${nextTip?`<p class="note">${nextTip}</p>`:''}
+    ${L.mode==='nt'?`<p class="note">Освоено по «${esc(L.course.t)}»: <b>${ntPct(L.course)} %</b>. ${ntPct(L.course)>=PASS?'Fälle с нормами открыты.':`До Fälle с нормами нужно ${PASS} %.`}</p>`:''}
     <p class="note">${todayXp()>=GOAL?'Цель дня выполнена.':`До цели дня: ${GOAL-todayXp()} XP`}</p>
   </div></div><div class="lfoot"><div class="inner"><button class="big-btn" id="finish">Продолжить</button></div></div>`;
 }
