@@ -191,6 +191,44 @@ button:focus-visible{outline:2px solid var(--form);outline-offset:2px}
 .rgrid b{display:block;font-family:var(--f-mono);font-size:22px}
 .rgrid span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .note{font-size:13px;color:var(--muted);margin-top:16px}
+
+.lhead .x#mute svg{stroke-width:2}
+.frowbtn{display:flex;gap:10px;margin-top:10px}
+.frowbtn .big-btn{margin-top:0;flex:1}
+.rule-btn{border:2px solid var(--red);color:var(--red);background:var(--sheet);font-weight:700;padding:0 14px;text-transform:uppercase;letter-spacing:.04em;font-size:14px}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,20,14,.5);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--paper);width:100%;max-width:560px;max-height:86vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:4px solid var(--form);position:relative}
+.sheet-x{position:absolute;top:8px;right:8px;width:36px;height:36px;display:grid;place-items:center;color:var(--muted)}
+.sheet-x svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.4;fill:none}
+.rcard{background:var(--sheet);border:1.5px solid var(--rule);border-left:5px solid var(--form);padding:12px;margin-top:10px}
+.rk{font-family:var(--f-display);font-stretch:85%;font-weight:800;font-size:19px;line-height:1.2}
+.rru{margin:6px 0 0;font-size:15px}
+.rru b{color:var(--form)}
+.rde{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic}
+.frow.hl{background:var(--form-soft)}
+.frow.hl .v{font-weight:700;color:var(--form)}
+.frow .v .p{margin-left:4px;font-size:11px}
+.intro-s{margin-top:18px}
+.fintro{padding:0 16px 10px;font-size:14px;color:var(--muted)}
+.fintro b{color:var(--form)}
+.flist{padding:14px 16px 6px;border-top:1px solid var(--rule)}
+.fs{display:grid;grid-template-columns:32px 1fr;gap:12px;position:relative;padding-bottom:18px}
+.fs:not(:last-child)::before{content:"";position:absolute;left:15px;top:34px;bottom:2px;border-left:2px solid var(--form)}
+.fn{width:32px;height:32px;display:grid;place-items:center;background:var(--form);color:var(--on-form);font-family:var(--f-mono);font-weight:600;font-size:13px}
+.fn.s{width:auto;min-width:34px;height:24px;padding:0 4px;background:var(--form-soft);color:var(--form);font-size:11px}
+.fb{min-width:0}
+.fq{font-weight:700;font-size:16px;line-height:1.3;padding-top:4px}
+.fhide{margin-top:4px}
+.fk{font-family:var(--f-display);font-stretch:85%;font-weight:700;font-size:15px}
+.fhide.hid{cursor:pointer;background:repeating-linear-gradient(-45deg,var(--rule) 0 2px,transparent 2px 9px);min-height:44px}
+.fhide.hid>*{visibility:hidden}
+.fex{font-size:14px;margin-top:6px}
+.fex.de{font-style:italic;color:var(--muted);font-size:13px}
+.fno{margin-top:8px;font-size:13px;background:var(--red-soft);padding:6px 8px;border-left:3px solid var(--red)}
+.fno b{color:var(--red)}
+.fsub{margin-top:10px;display:flex;flex-direction:column;gap:10px;border-left:2px dashed var(--rule);padding-left:10px}
+.fsr{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start}
+.fsr .fq{font-size:14px;padding-top:2px}
 </style>
 </head>
 <body>
@@ -630,6 +668,153 @@ const COURSES = [
 ]}
 ];
 
+COURSES.push({id:'erb', t:'Erbschaft- & Schenkungsteuer', sub:'Наследство и дарение — ErbStG', units:[
+{id:'erb0', t:'ErbSt-Grundlagen', sub:'§§ 1, 2, 3, 7, 9, 20 ErbStG', kz:'ErbSt', ordered:false,
+ theory:[
+  {h:'Один закон — два налога', t:'<b>ErbStG</b> регулирует и налог на наследство (<b>Erbschaftsteuer</b>), и налог на дарение (<b>Schenkungsteuer</b>). Правила почти одинаковые: те же классы, вычеты и ставки. Облагается <b>обогащение</b> получателя (Bereicherung).'},
+  {h:'Что облагается', t:'§ 1 ErbStG называет 4 случая: <b>наследство</b> (Erwerb von Todes wegen, § 3), <b>дарение при жизни</b> (Schenkung unter Lebenden, § 7), целевые выплаты (Zweckzuwendungen) и раз в 30 лет — имущество семейных фондов.'},
+  {h:'Когда Германия облагает всё', t:'Если <b>умерший / даритель или получатель</b> живёт в Германии (Inländer), облагается <b>всё</b> полученное имущество, где бы оно ни находилось (§ 2 Abs. 1 Nr. 1). Если никто — только немецкое имущество (Inlandsvermögen).'},
+  {h:'Когда возникает налог', t:'Наследство — в <b>день смерти</b> (§ 9 Abs. 1 Nr. 1). Подарок — когда он <b>фактически передан</b> (Nr. 2). На эту же дату оценивают имущество (§ 11).'}
+ ],
+ steps:[
+  {k:'Steuerpflichtige Vorgänge', p:'§ 1 Abs. 1 ErbStG', d:'Erwerb von Todes wegen, Schenkungen unter Lebenden, Zweckzuwendungen, Vermögen von Familienstiftungen (alle 30 Jahre).', ru:'Какие события облагаются: наследство, дарение, целевые выплаты, семейные фонды.'},
+  {k:'Erwerb von Todes wegen', p:'§ 3 ErbStG', d:'Z. B. Erbanfall, Vermächtnis, geltend gemachter Pflichtteil, Lebensversicherung zugunsten Dritter.', ru:'Получение после смерти: наследство, завещательный отказ, обязательная доля, страховка.'},
+  {k:'Schenkung unter Lebenden', p:'§ 7 Abs. 1 Nr. 1 ErbStG', d:'Freigebige Zuwendung, soweit der Bedachte auf Kosten des Zuwendenden bereichert wird.', ru:'Добровольный бесплатный подарок при жизни, который обогащает получателя.'},
+  {k:'Unbeschränkte Steuerpflicht', p:'§ 2 Abs. 1 Nr. 1 ErbStG', d:'Erblasser/Schenker oder Erwerber ist Inländer → gesamter Vermögensanfall.', ru:'Хотя бы одна сторона живёт в Германии — облагается всё имущество.'},
+  {k:'Beschränkte Steuerpflicht', p:'§ 2 Abs. 1 Nr. 3 ErbStG', d:'Keiner ist Inländer → nur Inlandsvermögen i. S. d. § 121 BewG.', ru:'Никто не живёт в Германии — облагается только немецкое имущество.'},
+  {k:'Entstehung beim Erwerb von Todes wegen', p:'§ 9 Abs. 1 Nr. 1 ErbStG', d:'Mit dem Tod des Erblassers.', ru:'Налог возникает в день смерти.'},
+  {k:'Entstehung bei Schenkung', p:'§ 9 Abs. 1 Nr. 2 ErbStG', d:'Mit dem Zeitpunkt der Ausführung der Zuwendung.', ru:'Налог возникает, когда подарок фактически передан.'},
+  {k:'Steuerschuldner', p:'§ 20 Abs. 1 ErbStG', d:'Der Erwerber; bei einer Schenkung auch der Schenker (Gesamtschuldner).', ru:'Платит получатель; при дарении — также даритель.'},
+  {k:'Anzeigepflicht', p:'§ 30 Abs. 1 ErbStG', d:'Der Erwerb ist binnen 3 Monaten dem Finanzamt anzuzeigen.', ru:'Сообщить в налоговую в течение 3 месяцев.'}
+ ],
+ cases:[
+  {q:'Vater V (wohnhaft in Saarlouis) stirbt; Sohn S lebt in Paris und erbt ein Ferienhaus in Spanien. Steuerpflicht in DE?', o:['Unbeschränkt – der Erblasser war Inländer','Keine – S lebt im Ausland','Beschränkt – nur Inlandsvermögen','Keine – das Haus liegt in Spanien'], a:0, e:'Достаточно, чтобы умерший был Inländer (§ 2 Abs. 1 Nr. 1) → облагается всё наследство, включая дом в Испании. Испанский налог можно зачесть (§ 21).'},
+  {q:'Die Tante überweist ihrer Nichte am 1. März 50.000 €, Gutschrift am 4. März. Wann entsteht die Schenkungsteuer?', o:['Am 4. März – Ausführung der Zuwendung','Am 1. März','Am 31. Dezember','Bei Abgabe der Steuererklärung'], a:0, e:'§ 9 Abs. 1 Nr. 2: дарение исполнено, когда деньги поступили на счёт получателя.'},
+  {q:'Wer schuldet die Schenkungsteuer?', o:['Beschenkter und Schenker als Gesamtschuldner','Nur der Schenker','Nur der Beschenkte','Das Finanzamt'], a:0, e:'§ 20 Abs. 1 S. 1 ErbStG: при дарении должны оба. Обычно налог требуют с получателя.'},
+  {q:'Innerhalb welcher Frist ist ein Erwerb dem Finanzamt anzuzeigen?', o:['3 Monate','1 Monat','6 Monate','1 Jahr'], a:0, e:'§ 30 Abs. 1 ErbStG: 3 месяца с момента, когда получатель узнал о приобретении.'},
+  {q:'Ist ein geltend gemachter Pflichtteil ein Erwerb von Todes wegen?', o:['Ja – § 3 Abs. 1 Nr. 1 ErbStG','Nein – er ist steuerfrei','Nein – er ist eine Schenkung','Nur über 20.000 €'], a:0, e:'Обязательная доля облагается, если её потребовали (geltend gemacht): § 3 Abs. 1 Nr. 1 ErbStG.'}
+ ]},
+
+{id:'erbkl', t:'Steuerklassen & Freibeträge', sub:'§§ 15–17, 19 ErbStG', kz:'§ 15', ordered:false,
+ theory:[
+  {h:'Кто ближе — платит меньше', t:'Все получатели делятся на <b>3 класса</b> (§ 15). Чем ближе родство, тем больше <b>Freibetrag</b> — необлагаемая сумма (§ 16), и тем ниже <b>ставка</b> (§ 19).'},
+  {h:'Три класса', t:'<b>I</b>: супруг, дети, пасынки/падчерицы, внуки, родители <i>при наследстве</i>.<br><b>II</b>: родители <i>при дарении</i>, братья и сёстры, племянники, тёща/свёкор, зять/невестка, бывший супруг.<br><b>III</b>: все остальные — в том числе партнёр без брака и друзья.'},
+  {h:'Главные Freibeträge', t:'Супруг <b>500.000 €</b> · ребёнок <b>400.000 €</b> · внук <b>200.000 €</b> · родители при наследстве <b>100.000 €</b> · классы II и III — <b>20.000 €</b>.<br><br>При наследстве супруг получает ещё <b>Versorgungsfreibetrag 256.000 €</b> (§ 17).'},
+  {h:'Ставки', t:'Ставка зависит от класса и суммы: от <b>7 %</b> (класс I, до 75.000 €) до <b>50 %</b> (класс III, свыше 6 млн €). В классе III до 6 млн € ставка всегда 30 %.'}
+ ],
+ steps:[
+  {k:'Steuerklasse I', p:'§ 15 Abs. 1 Kl. I ErbStG', d:'Ehegatte, Lebenspartner, Kinder, Stiefkinder, deren Abkömmlinge; Eltern und Voreltern bei Erwerb von Todes wegen.', ru:'Супруг, дети, внуки; родители — только при наследстве.'},
+  {k:'Steuerklasse II', p:'§ 15 Abs. 1 Kl. II ErbStG', d:'Eltern bei Schenkung, Geschwister, Nichten/Neffen, Stiefeltern, Schwiegerkinder, Schwiegereltern, geschiedener Ehegatte.', ru:'Родители при дарении, братья/сёстры, племянники, родня по браку, бывший супруг.'},
+  {k:'Steuerklasse III', p:'§ 15 Abs. 1 Kl. III ErbStG', d:'Alle übrigen Erwerber, z. B. Lebensgefährte ohne Ehe, Freunde.', ru:'Все остальные — в том числе партнёр без брака.'},
+  {k:'Freibetrag Ehegatte', p:'§ 16 Abs. 1 Nr. 1 ErbStG', d:'500.000 € für Ehegatten und eingetragene Lebenspartner.', ru:'Супругу не облагается 500.000 €.'},
+  {k:'Freibetrag Kinder', p:'§ 16 Abs. 1 Nr. 2 ErbStG', d:'400.000 € für Kinder, Stiefkinder und Kinder verstorbener Kinder.', ru:'Ребёнку не облагается 400.000 €.'},
+  {k:'Freibetrag Enkel', p:'§ 16 Abs. 1 Nr. 3 ErbStG', d:'200.000 € für Enkel, deren Elternteil noch lebt.', ru:'Внуку не облагается 200.000 €.'},
+  {k:'Freibetrag übrige Steuerklasse I', p:'§ 16 Abs. 1 Nr. 4 ErbStG', d:'100.000 €, z. B. Eltern bei Erwerb von Todes wegen, Urenkel.', ru:'Родителям при наследстве — 100.000 €.'},
+  {k:'Freibetrag Steuerklassen II und III', p:'§ 16 Abs. 1 Nr. 5, 7 ErbStG', d:'Jeweils 20.000 €.', ru:'Классам II и III — по 20.000 €.'},
+  {k:'Versorgungsfreibetrag', p:'§ 17 ErbStG', d:'Nur bei Erwerb von Todes wegen: Ehegatte 256.000 €, Kinder je nach Alter 52.000 € bis 10.300 € (bis 27 Jahre).', ru:'Доп. вычет при наследстве: супругу 256.000 €, детям — по возрасту.'},
+  {k:'Steuersätze', p:'§ 19 Abs. 1 ErbStG', d:'Stufentarif nach Steuerklasse: z. B. bis 75.000 € → 7 % / 15 % / 30 %.', ru:'Ставка зависит от класса и суммы.'}
+ ],
+ cases:[
+  {q:'Die Mutter schenkt ihrem Sohn 100.000 €. Steuerklasse und Freibetrag?', o:['Kl. I, 400.000 € – keine Steuer','Kl. II, 20.000 €','Kl. I, 100.000 €','Kl. III, 20.000 €'], a:0, e:'Ребёнок — класс I, Freibetrag 400.000 € → налога нет.'},
+  {q:'Ein Sohn schenkt seiner Mutter 50.000 €. Steuerklasse?', o:['II – Eltern bei Schenkung','I – Eltern sind immer Kl. I','III','Steuerfrei'], a:0, e:'Родители в классе I только при наследстве. Подарок от ребёнка родителям — класс II (Freibetrag 20.000 €).'},
+  {q:'Die Lebensgefährtin (nicht verheiratet) erbt 120.000 €. Steuerpflichtiger Erwerb ohne weitere Abzüge?', o:['100.000 € – Kl. III, Freibetrag 20.000 €','0 € – Freibetrag 500.000 €','20.000 €','120.000 €'], a:0, e:'Без брака — класс III, вычет 20.000 € → 100.000 € облагаются по 30 %.'},
+  {q:'Steuerpflichtiger Erwerb 70.000 €, Steuerklasse I. Erbschaftsteuer?', o:['4.900 € (7 %)','7.700 € (11 %)','10.500 € (15 %)','0 €'], a:0, e:'До 75.000 € в классе I — 7 %: 70.000 × 7 % = 4.900 €.'},
+  {q:'Die Witwe erbt. Welche Freibeträge stehen ihr grundsätzlich zu?', o:['500.000 € + 256.000 € Versorgungsfreibetrag','Nur 500.000 €','400.000 €','Nur 256.000 €'], a:0, e:'§ 16 Abs. 1 Nr. 1 + § 17 Abs. 1: 500.000 € и Versorgungsfreibetrag 256.000 € (он уменьшается на капитализированные пенсии).'}
+ ]},
+
+{id:'erbs', t:'Schema ErbSt', sub:'§ 10 ErbStG, R E 10.1 ErbStR', kz:'§ 10', ordered:true,
+ theory:[
+  {h:'От наследства к налогу', t:'Схема похожа на ESt: сначала оцениваем всё полученное, вычитаем освобождения и долги — получаем <b>Bereicherung</b>. Потом вычитаем личные Freibeträge → <b>steuerpflichtiger Erwerb</b> → умножаем на ставку.'},
+  {h:'Долги наследства', t:'<b>Nachlassverbindlichkeiten</b> (§ 10 Abs. 5): долги умершего (кредит), обязательства из наследства (Vermächtnis, Pflichtteil) и расходы на похороны. На похороны без чеков есть <b>Pauschbetrag 15.000 €</b> на весь наследственный случай.'},
+  {h:'Правило 10 лет', t:'Все подарки и наследства от <b>одного и того же лица</b> за 10 лет складываются (§ 14). Поэтому полный Freibetrag снова доступен только через 10 лет.'}
+ ],
+ steps:[
+  {k:'Steuerpflichtiger Vorgang', p:'§ 1 i.V.m. §§ 3, 7 ErbStG', d:'Erwerb von Todes wegen oder Schenkung unter Lebenden.', ru:'Есть наследство или дарение?'},
+  {k:'Persönliche Steuerpflicht', p:'§ 2 ErbStG', d:'Unbeschränkt (Inländer beteiligt) oder beschränkt (nur Inlandsvermögen).', ru:'Облагается всё имущество или только немецкое?'},
+  {k:'Stichtag', p:'§§ 9, 11 ErbStG', d:'Entstehung der Steuer = Bewertungsstichtag (Tod bzw. Ausführung der Schenkung).', ru:'На какую дату оцениваем имущество?'},
+  {k:'Bewertung des Vermögensanfalls', p:'§ 12 ErbStG i.V.m. BewG', d:'Grundbesitz, Betriebsvermögen, Wertpapiere usw. nach dem Bewertungsgesetz.', ru:'Оцениваем всё полученное по правилам BewG.'},
+  {k:'− sachliche Steuerbefreiungen', p:'§§ 13, 13a, 13d ErbStG', d:'Z. B. Hausrat, Familienheim, begünstigtes Betriebsvermögen, vermietete Wohnimmobilien (10 %).', ru:'Вычитаем освобождённое: домашнее имущество, семейный дом, бизнес.'},
+  {k:'− Nachlassverbindlichkeiten', p:'§ 10 Abs. 5 ErbStG', d:'Erblasserschulden, Erbfallschulden, Erbfallkosten (Pauschbetrag 15.000 €).', ru:'Вычитаем долги и расходы на похороны.'},
+  {k:'= Bereicherung des Erwerbers', p:'§ 10 Abs. 1 S. 1 ErbStG', d:'Wert des Vermögensanfalls abzüglich Befreiungen und Verbindlichkeiten.', ru:'Чистое обогащение получателя.'},
+  {k:'+ Vorerwerbe innerhalb von 10 Jahren', p:'§ 14 ErbStG', d:'Frühere Erwerbe von derselben Person werden hinzugerechnet.', ru:'Прибавляем подарки от того же лица за 10 лет.'},
+  {k:'− persönlicher Freibetrag', p:'§ 16 ErbStG', d:'Je nach Verwandtschaft 500.000 € bis 20.000 €.', ru:'Вычитаем личный Freibetrag.'},
+  {k:'− Versorgungsfreibetrag', p:'§ 17 ErbStG', d:'Nur bei Erwerb von Todes wegen durch Ehegatten und Kinder.', ru:'Доп. вычет супругу и детям при наследстве.'},
+  {k:'= steuerpflichtiger Erwerb', p:'§ 10 Abs. 1 S. 6 ErbStG', d:'Auf volle 100 € nach unten abgerundet.', ru:'Облагаемая сумма, округлённая вниз до 100 €.'},
+  {k:'× Steuersatz nach Steuerklasse', p:'§§ 15, 19 ErbStG', d:'Steuerklasse bestimmen, Prozentsatz aus der Tabelle anwenden.', ru:'Определяем класс и ставку по таблице.'}
+ ],
+ cases:[
+  {q:'Was ist der erste Schritt im ErbSt-Schema?', o:['Steuerpflichtiger Vorgang (§ 1)','Freibetrag (§ 16)','Steuersatz (§ 19)','Bewertung (§ 12)'], a:0, e:'Сначала проверяем, есть ли облагаемое событие: наследство или дарение (§ 1 i.V.m. §§ 3, 7).'},
+  {q:'Tochter erbt; Beerdigungskosten ohne Belege. Wie viel wird für Erbfallkosten abgezogen?', o:['15.000 € Pauschbetrag','10.300 €','0 €','Nur nachgewiesene Kosten'], a:0, e:'§ 10 Abs. 5 Nr. 3: без доказательств вычитается Pauschbetrag 15.000 € (для смертей с 2025 года).'},
+  {q:'Bereicherung 450.000 €, Erwerber ist ein 30-jähriges Kind (Erbfall). Steuerpflichtiger Erwerb?', o:['50.000 €','450.000 €','0 €','250.000 €'], a:0, e:'450.000 − 400.000 (§ 16) = 50.000 €. Versorgungsfreibetrag детям — только до 27 лет.'},
+  {q:'Steuerpflichtiger Erwerb rechnerisch 50.080 €. Welcher Betrag wird besteuert?', o:['50.000 €','50.100 €','50.080 €','51.000 €'], a:0, e:'§ 10 Abs. 1 S. 6: округляем вниз до полных 100 €.'},
+  {q:'Vater schenkte dem Sohn vor 6 Jahren 300.000 € und schenkt jetzt nochmals 300.000 €. Wie wird gerechnet?', o:['Zusammenrechnung: 600.000 € − 400.000 € Freibetrag','Jede Schenkung hat eigenen Freibetrag','Die erste Schenkung zählt nicht mehr','Keine Steuer'], a:0, e:'§ 14: подарки от одного лица за 10 лет складываются, Freibetrag используется один раз. Налог за прошлый подарок засчитывается.'}
+ ]},
+
+{id:'schenk', t:'Schenkung & Befreiungen', sub:'§§ 5, 7, 13, 14 ErbStG', kz:'§ 13', ordered:false,
+ theory:[
+  {h:'Что считается подарком', t:'<b>Schenkung</b> (§ 7) — добровольная передача, после которой получатель стал <b>богаче</b> за счёт дарителя. Важно не название договора, а результат: продажа сильно дешевле стоимости тоже частично подарок (<b>gemischte Schenkung</b>).'},
+  {h:'Что освобождено', t:'§ 13 даёт много освобождений: домашнее имущество, <b>Familienheim</b> (жильё семьи), деньги на содержание и учёбу, обычные подарки по случаю (Gelegenheitsgeschenke), пожертвования церкви и благотворительным организациям.'},
+  {h:'Familienheim', t:'Подарить супругу <b>жильё семьи</b> при жизни можно без налога (§ 13 Nr. 4a). При наследстве супруг получает его без налога, если живёт там <b>10 лет</b> (Nr. 4b). Детям — до <b>200 м²</b> жилой площади и тоже при проживании 10 лет (Nr. 4c).'}
+ ],
+ steps:[
+  {k:'Freigebige Zuwendung', p:'§ 7 Abs. 1 Nr. 1 ErbStG', d:'Objektive Bereicherung auf Kosten des Schenkers und Wille zur Unentgeltlichkeit.', ru:'Получатель стал богаче, и даритель сделал это добровольно и бесплатно.'},
+  {k:'Gemischte Schenkung', p:'R E 7.4 ErbStR', d:'Verkauf unter Wert: der unentgeltliche Teil ist eine Schenkung.', ru:'Продажа дешевле стоимости: разница — подарок.'},
+  {k:'Hausrat', p:'§ 13 Abs. 1 Nr. 1 Buchst. a ErbStG', d:'Steuerklasse I: Hausrat bis 41.000 € steuerfrei; andere bewegliche Gegenstände bis 12.000 € (Buchst. b).', ru:'Домашнее имущество в классе I не облагается до 41.000 €.'},
+  {k:'Familienheim an Ehegatten (lebzeitig)', p:'§ 13 Abs. 1 Nr. 4a ErbStG', d:'Zuwendung des selbstgenutzten Familienheims an den Ehegatten – steuerfrei, ohne Wertgrenze.', ru:'Подарок супругу жилья семьи — без налога и без лимита.'},
+  {k:'Familienheim an Ehegatten (Erbfall)', p:'§ 13 Abs. 1 Nr. 4b ErbStG', d:'Steuerfrei, wenn der Ehegatte es 10 Jahre selbst bewohnt.', ru:'Наследство жилья супругу — без налога при проживании 10 лет.'},
+  {k:'Familienheim an Kinder (Erbfall)', p:'§ 13 Abs. 1 Nr. 4c ErbStG', d:'Steuerfrei bis 200 m² Wohnfläche bei Selbstnutzung für 10 Jahre.', ru:'Детям — до 200 м² при проживании 10 лет.'},
+  {k:'Unterhalt und Ausbildung', p:'§ 13 Abs. 1 Nr. 12 ErbStG', d:'Zuwendungen zum angemessenen Unterhalt oder zur Ausbildung sind steuerfrei.', ru:'Деньги на содержание и учёбу не облагаются.'},
+  {k:'Gelegenheitsgeschenke', p:'§ 13 Abs. 1 Nr. 14 ErbStG', d:'Übliche Gelegenheitsgeschenke, z. B. zum Geburtstag oder zur Hochzeit.', ru:'Обычные подарки по случаю: день рождения, свадьба.'},
+  {k:'Zusammenrechnung 10 Jahre', p:'§ 14 Abs. 1 ErbStG', d:'Mehrere Erwerbe von derselben Person innerhalb von 10 Jahren werden zusammengerechnet.', ru:'Подарки от одного лица за 10 лет складываются.'},
+  {k:'Zugewinnausgleich', p:'§ 5 ErbStG', d:'Die Ausgleichsforderung für den Zugewinn gehört nicht zum steuerpflichtigen Erwerb.', ru:'Компенсация прироста имущества супругу не облагается.'}
+ ],
+ cases:[
+  {q:'Ehemann schenkt seiner Frau die gemeinsam bewohnte Villa (Wert 2 Mio. €). Schenkungsteuer?', o:['Keine – § 13 Abs. 1 Nr. 4a','Auf 1,5 Mio. € nach Freibetrag','Auf 2 Mio. €','Nur Grunderwerbsteuer'], a:0, e:'Familienheim супругу при жизни освобождено без лимита стоимости (§ 13 Abs. 1 Nr. 4a).'},
+  {q:'Sohn erbt das Elternhaus (250 m² Wohnfläche) und zieht sofort dauerhaft ein. Befreiung nach § 13 Abs. 1 Nr. 4c?', o:['Ja, aber nur anteilig für 200 m²','Ja, vollständig','Nein, nur für Ehegatten','Nein, nur bei Schenkung'], a:0, e:'Для детей освобождение ограничено 200 м² жилой площади; часть сверх этого облагается.'},
+  {q:'Vater verkauft der Tochter ein Grundstück im Wert von 300.000 € für 100.000 €. Was liegt vor?', o:['Gemischte Schenkung über den unentgeltlichen Teil','Keine Schenkung, da Kaufvertrag','Volle Schenkung über 300.000 €','Nur Einkommensteuer'], a:0, e:'Продажа дешевле стоимости → gemischte Schenkung (R E 7.4): подарком считается бесплатная часть.'},
+  {q:'Großmutter schenkt dem Enkel zum 18. Geburtstag eine Uhr für 300 €. Schenkungsteuer?', o:['Steuerfrei – übliches Gelegenheitsgeschenk','Steuerpflichtig, aber unter Freibetrag','Steuerpflichtig mit 7 %','Nur anzeigepflichtig'], a:0, e:'§ 13 Abs. 1 Nr. 14: обычные подарки по случаю освобождены.'},
+  {q:'Eltern zahlen die Studiengebühren und die Miete ihres studierenden Sohnes. Schenkungsteuer?', o:['Keine – § 13 Abs. 1 Nr. 12','Ja, über 20.000 €','Ja, immer','Nur Erbschaftsteuer'], a:0, e:'Деньги на разумное содержание и обучение освобождены (§ 13 Abs. 1 Nr. 12).'}
+ ]}
+]});
+
+/* Подробные схемы для вкладки «Схемы»: q — вопрос, который задаёшь себе; ex — пояснение; no — что делать, если ответ «нет» */
+const SCHEMES = [
+{id:'g-ust', unit:'ges', t:'Gesamtschema Umsatzsteuer', sub:'Проверка одного оборота · §§ 1–15 UStG',
+ intro:'Главная схема по НДС. Проходи шаги сверху вниз. На каждом шаге задай себе вопрос. Если ответ «нет» — смотри красную строку.',
+ steps:[
+  {k:'Steuerbarkeit', p:'§ 1 Abs. 1 Nr. 1 UStG', q:'Облагается ли сделка вообще?', no:'Хотя бы один признак не выполнен → nicht steuerbar. Проверка заканчивается.',
+   sub:[
+    {k:'Leistung', p:'§ 3 Abs. 1, Abs. 9 UStG', q:'Это поставка товара (Lieferung) или услуга (sonstige Leistung)?'},
+    {k:'Unternehmer', p:'§ 2 Abs. 1 UStG', q:'Продавец ведёт деятельность самостоятельно и постоянно ради дохода?'},
+    {k:'Im Inland', p:'§ 1 Abs. 2; §§ 3 Abs. 6–8, 3a, 3b UStG', q:'Место сделки — Германия? Определяем по правилам о месте (схемы ниже).'},
+    {k:'Gegen Entgelt', p:'§ 1 Abs. 1 Nr. 1 UStG', q:'Есть оплата, связанная именно с этой поставкой или услугой?'},
+    {k:'Im Rahmen des Unternehmens', p:'§ 2 Abs. 1 S. 2 UStG', q:'Сделка относится к бизнесу, а не к частной жизни?'}
+   ], ex:'Особые облагаемые случаи: бесплатные изъятия (§ 3 Abs. 1b, 9a), ввоз из-за пределов ЕС (§ 1 Abs. 1 Nr. 4), покупка из ЕС (§ 1 Abs. 1 Nr. 5).'},
+  {k:'Steuerbefreiung', p:'§ 4 UStG', q:'Есть ли освобождение в каталоге § 4?', ex:'Да → сделка steuerfrei, переходи к шагу 3 (Option).', no:'Нет освобождения → сделка steuerpflichtig, сразу к шагу 4.'},
+  {k:'Option zur Steuerpflicht', p:'§ 9 UStG', q:'Отказался ли предприниматель от освобождения?', ex:'Можно только для § 4 Nr. 8a–g, 9a, 12, 13, 19 и только если клиент — предприниматель (для аренды ещё § 9 Abs. 2).', no:'Нет → оборот остаётся steuerfrei, налога нет. Помни: освобождение может закрыть Vorsteuer.'},
+  {k:'Bemessungsgrundlage', p:'§ 10 UStG', q:'От какой суммы считаем налог?', ex:'Entgelt без НДС: брутто ÷ 1,19 (или ÷ 1,07). Для бесплатных изъятий — § 10 Abs. 4 (цена закупки / расходы).'},
+  {k:'Steuersatz', p:'§ 12 UStG', q:'Какая ставка — 19 % или 7 %?', ex:'Обычно 19 % (Abs. 1). 7 % — товары из Anlage 2 (большинство продуктов, книги) и случаи Abs. 2.'},
+  {k:'Steuerbetrag', p:'§ 10 i.V.m. § 12 UStG', q:'Сколько налога?', ex:'Bemessungsgrundlage × ставка.'},
+  {k:'Entstehung der Steuer', p:'§ 13 UStG', q:'В каком периоде возникает налог?', ex:'Sollbesteuerung — период, когда сделана поставка/услуга. Anzahlung — период получения денег. Istbesteuerung (§ 20) — период получения денег.'},
+  {k:'Steuerschuldner', p:'§§ 13a, 13b UStG', q:'Кто платит налог в налоговую?', ex:'Обычно продавец (§ 13a). Reverse Charge (§ 13b) — покупатель: иностранные фирмы, строительные работы и др.'},
+  {k:'Vorsteuerabzug beim Empfänger', p:'§ 15 UStG', q:'Может ли покупатель вычесть этот налог?', ex:'Отдельная схема «Vorsteuerabzug» ниже.'}
+ ]},
+{id:'g-ortl', unit:'lief', t:'Ort der Lieferung', sub:'Где поставлен товар · §§ 3 Abs. 6–8, 3c, 3e UStG',
+ intro:'Нужна для признака «im Inland» у поставок товара. Сначала спецслучаи, потом основное правило.',
+ steps:[
+  {k:'Sonderfälle prüfen', p:'§§ 3c, 3e, 3 Abs. 8, 3 Abs. 6a UStG', q:'Есть ли особый случай?', ex:'Продажа частному лицу в другую страну ЕС (§ 3c) · продажа на борту (§ 3e) · ввоз из-за пределов ЕС, если продавец платит ввозной НДС (§ 3 Abs. 8) · цепочка продавцов — Reihengeschäft (§ 3 Abs. 6a).', no:'Нет особого случая → шаг 2.'},
+  {k:'Wird der Gegenstand befördert oder versendet?', p:'§ 3 Abs. 6 S. 1 UStG', q:'Товар везут к покупателю?', ex:'Да → bewegte Lieferung: место там, где перевозка начинается.', no:'Нет → шаг 3.'},
+  {k:'Ruhende Lieferung', p:'§ 3 Abs. 7 S. 1 UStG', q:'Где товар находится в момент передачи?', ex:'Место там, где покупатель получает распоряжение товаром (например, кухня после монтажа у клиента).'}
+ ]},
+{id:'g-orts', unit:'sol', t:'Ort der sonstigen Leistung', sub:'Где оказана услуга · §§ 3a, 3b UStG',
+ intro:'Для услуг порядок строгий: сначала все спецправила, только потом основные правила B2B и B2C.',
+ steps:[
+  {k:'Sonderregeln prüfen', p:'§ 3a Abs. 3–8, §§ 3b, 3e UStG', q:'Подходит ли спецправило?', ex:'Недвижимость → где участок (Abs. 3 Nr. 1) · аренда транспорта до 30 дней → где передали (Nr. 2) · ресторан → где кормят (Nr. 3b) · консультации частному лицу вне ЕС → у клиента (Abs. 4) · электронные услуги частным лицам в ЕС → у клиента (Abs. 5) · перевозка людей → по маршруту (§ 3b).', no:'Нет спецправила → шаг 2.'},
+  {k:'Ist der Empfänger Unternehmer und bezieht für sein Unternehmen?', p:'§ 3a Abs. 2 UStG', q:'Клиент — предприниматель и покупает для бизнеса?', ex:'Да (B2B) → место там, где находится клиент.', no:'Нет → шаг 3.'},
+  {k:'B2C-Grundregel', p:'§ 3a Abs. 1 UStG', q:'Клиент — частное лицо?', ex:'Место там, где находится исполнитель.'}
+ ]}
+];
+
 /* ============ STATE ============ */
 const ALLU=[];COURSES.forEach(c=>c.units.forEach((u,i)=>{u.course=c;u.idx=i;ALLU.push(u)}));
 const KEY='ustSchemaDrill.v2', GOAL=50, INT=[0,1,3,7,14,30], MAXL=5;
@@ -665,7 +850,8 @@ function opts(correct,pool,n=4){const others=shuffle([...new Set(pool)].filter(x
 const ALLP=ALLU.filter(u=>u.id!=='zit').flatMap(u=>u.steps.map(s=>s.p));
 function stepCard(s){return `<b>${esc(s.k)}</b> · <span class="p">${esc(s.p)}</span><br>${esc(s.ru)}`}
 
-function exStep(u,i,ty){
+function exStep(u,i,ty){return Object.assign(exStep0(u,i,ty),{unit:u,si:i})}
+function exStep0(u,i,ty){
   const s=u.steps[i], id=`${u.id}:s${i}`;
   const names=u.steps.map(x=>x.k), paras=u.steps.map(x=>x.p);
   const pool=paras.length>=4||u.id==='zit'?paras:paras.concat(ALLP);
@@ -683,13 +869,13 @@ function exStep(u,i,ty){
 }
 function exOrder(u){
   let st=u.steps,off=0; if(st.length>6){off=Math.floor(Math.random()*(st.length-5));st=st.slice(off,off+6)}
-  return {id:u.id+':order',kind:'order',label:'Расставь по порядку',q:u.t,hint:u.sub+(st.length<u.steps.length?` · шаги ${off+1}–${off+st.length}`:''),ans:st.map(s=>s.k),toks:shuffle(st.map(s=>s.k)),expl:st.map((s,i)=>`${off+i+1}. ${esc(s.k)}`).join('<br>')};
+  return {id:u.id+':order',unit:u,kind:'order',label:'Расставь по порядку',q:u.t,hint:u.sub+(st.length<u.steps.length?` · шаги ${off+1}–${off+st.length}`:''),ans:st.map(s=>s.k),toks:shuffle(st.map(s=>s.k)),expl:st.map((s,i)=>`${off+i+1}. ${esc(s.k)}`).join('<br>')};
 }
-function exCase(u,j){const c=u.cases[j];return {id:`${u.id}:c${j}`,kind:'choice',label:'Fall',q:c.q,hint:u.t,opts:shuffle(c.o),ans:c.o[c.a],expl:esc(c.e)}}
+function exCase(u,j){const c=u.cases[j];return {id:`${u.id}:c${j}`,unit:u,ci:j,kind:'choice',label:'Fall',q:c.q,hint:u.t,opts:shuffle(c.o),ans:c.o[c.a],expl:esc(c.e)}}
 function exMatch(u,idx,mode){
   const sel=shuffle(idx).slice(0,4);
   const L=sel.map(i=>u.steps[i].k), R=sel.map(i=>mode==='p'?u.steps[i].p:u.steps[i].ru);
-  return {id:null,kind:'match',label:mode==='p'?'Соедини пункт и норму':'Соедини термин и смысл',q:u.t,hint:'Нажми слева, потом справа',left:shuffle(sel.map((_,k)=>k)),right:shuffle(sel.map((_,k)=>k)),L,R,mono:mode==='p'};
+  return {id:null,unit:u,sel,kind:'match',label:mode==='p'?'Соедини пункт и норму':'Соедини термин и смысл',q:u.t,hint:'Нажми слева, потом справа',left:shuffle(sel.map((_,k)=>k)),right:shuffle(sel.map((_,k)=>k)),L,R,mono:mode==='p'};
 }
 function exFromId(id){
   const [uid,k]=id.split(':'), u=unitById(uid);
@@ -738,14 +924,69 @@ function buildReview(){return weak(dueIds()).slice(0,10).map(exFromId)}
 function caseUnits(){return ALLU.filter(u=>done(u)>=3)}
 function buildCaseMix(){return shuffle(caseUnits().flatMap(u=>u.cases.map((_,j)=>`${u.id}:c${j}`))).slice(0,8).map(exFromId)}
 
+/* ============ SOUND ============ */
+let AC=null;
+function sound(kind){
+  if(S.mute)return;
+  try{
+    const C=window.AudioContext||window.webkitAudioContext; if(!C)return;
+    AC=AC||new C(); if(AC.state==='suspended')AC.resume();
+    const now=AC.currentTime+0.01;
+    const seq={ok:[[660,0,.1],[990,.09,.18]],bad:[[220,0,.16],[165,.14,.26]],tap:[[880,0,.06]],done:[[523,0,.12],[659,.11,.12],[784,.22,.12],[1047,.33,.3]]}[kind];
+    seq.forEach(([f,st,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type=kind==='bad'?'triangle':'sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,now+st);g.gain.exponentialRampToValueAtTime(kind==='bad'?0.25:0.18,now+st+0.015);g.gain.exponentialRampToValueAtTime(0.0001,now+st+d);
+      o.connect(g);g.connect(AC.destination);o.start(now+st);o.stop(now+st+d+0.03)});
+  }catch(e){}
+}
+
+/* ============ RULE ============ */
+const RULEMAP={'ust0:c0':[3],'ust0:c1':[2],'ust0:c2':[0],'ust0:c3':[4],'stb:c1':[4],'stb:c2':[3],'ges:c1':[3,4],'ges:c2':[6],'ges:c3':[0],
+ 'reihe:c0':[1],'reihe:c1':[1],'reihe:c2':[1],'bef:c3':[7],'ku:c0':[1,2],'ku:c1':[1],'ku:c2':[2],'vst:c2':[5],'ent:c0':[0],'est0:c2':[6,7],
+ 'ezve:c1':[5],'ezve:c2':[2,3,5,7],'ezve:c3':[8],'kste:c0':[1,3],'kste:c1':[5],'kste:c3':[3],'kste:c4':[5],'erbkl:c0':[0,4],'erbkl:c1':[1],'erbkl:c2':[2,7],'erbkl:c3':[9]};
+function normRoot(p){return p.replace(/\s+(UStG|EStG|KStG|ErbStG|AO|BewG|KStR|ErbStR|EStR)$/,'').split(/;| i\.V\.m\.|,/)[0].trim()}
+function ruleSteps(x){
+  const u=x.unit; if(!u)return [];
+  if(x.si!==undefined)return [x.si];
+  if(x.kind==='order'||x.kind==='match')return x.sel||u.steps.map((_,i)=>i);
+  if(x.ci!==undefined&&RULEMAP[x.id])return RULEMAP[x.id];
+  if(x.ci!==undefined){
+    const c=u.cases[x.ci], text=c.q+' '+c.o[c.a]+' '+c.e;
+    return u.steps.map((s,i)=>({i,r:normRoot(s.p)})).filter(o=>o.r.length>2&&new RegExp(o.r.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![0-9a-z])').test(text))
+      .sort((a,b)=>b.r.length-a.r.length).slice(0,2).map(o=>o.i);
+  }
+  return [];
+}
+function ruleHTML(x){
+  const u=x.unit, idx=ruleSteps(x);
+  let h=`<div class="eyebrow">Правило · ${esc(u.t)}</div>`;
+  if(idx.length)h+=idx.map(i=>{const s=u.steps[i];return `<div class="rcard"><div class="rk">${esc(s.k)}</div><span class="p">${esc(s.p)}</span><p class="rru">${esc(s.ru)}</p><p class="rde">${esc(s.d)}</p></div>`}).join('');
+  else h+=u.theory.map(t=>`<div class="rcard"><div class="rk">${esc(t.h)}</div><p class="rru">${t.t}</p></div>`).join('');
+  if(u.ordered)h+=`<div class="eyebrow" style="margin-top:14px">Где это в схеме</div><div class="form">${u.steps.map((s,i)=>`<div class="frow ${idx.includes(i)?'hl':''}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="v">${esc(s.k)} <span class="p">${esc(s.p)}</span></span></div>`).join('')}</div>`;
+  return h;
+}
+
 /* ============ HOME ============ */
 const ICON={
   path:'<svg viewBox="0 0 24 24"><path d="M5 4h4v4H5zM15 10h4v4h-4zM5 16h4v4H5zM9 6h3a2 2 0 0 1 2 2v2M15 14v2a2 2 0 0 1-2 2H9"/></svg>',
   review:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/><path d="M12 8v4l3 2"/></svg>',
   schema:'<svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/></svg>',
-  x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+  x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  on:'<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',
+  off:'<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l5 6M22 9l-5 6"/></svg>'
 };
 const app=document.getElementById('app');
+function autoScheme(u){return {id:'a-'+u.id,unit:u.id,t:u.t,sub:u.sub,intro:u.theory[0].t,steps:u.steps.map(s=>({k:s.k,p:s.p,q:s.ru,ex:s.d,de:true}))}}
+function schemeHTML(sc){
+  const step=(st,n)=>`<div class="fs"><span class="fn">${n}</span><div class="fb"><div class="fq">${esc(st.q)}</div>
+    <div class="fhide" data-fh><div class="fk">${esc(st.k)}</div><span class="p">${esc(st.p)}</span></div>
+    ${st.ex?`<div class="fex ${st.de?'de':''}">${esc(st.ex)}</div>`:''}
+    ${st.sub?`<div class="fsub">${st.sub.map((x,j)=>`<div class="fsr"><span class="fn s">${n}.${j+1}</span><div class="fb"><div class="fq">${esc(x.q)}</div><div class="fhide" data-fh><div class="fk">${esc(x.k)}</div><span class="p">${esc(x.p)}</span></div></div></div>`).join('')}</div>`:''}
+    ${st.no?`<div class="fno"><b>Если нет:</b> ${esc(st.no)}</div>`:''}</div></div>`;
+  return `<details class="sch flow" data-flow="${sc.id}" ${sc.id==='g-ust'?'open':''}><summary><h3>${esc(sc.t)}</h3><span>${esc(sc.sub)}</span></summary>
+    <div class="fintro">${sc.intro}</div>
+    <div class="schtools"><button class="chip" data-quiz="${sc.id}">Проверь себя</button><button class="chip" data-unquiz="${sc.id}">Показать всё</button></div>
+    <div class="flist">${sc.steps.map((st,i)=>step(st,i+1)).join('')}</div></details>`;
+}
 function plural(n,a,b,c){const m=n%10,h=n%100;if(m===1&&h!==11)return a;if(m>=2&&m<=4&&(h<12||h>14))return b;return c}
 
 function header(){
@@ -784,12 +1025,22 @@ function renderHome(){
       <button class="big-btn" id="startCases" ${cu?'':'disabled'}>Решать Fälle</button></div>
       <div class="card"><div class="eyebrow">Статистика</div>
       <p style="margin-top:8px">Изучено пунктов: <b class="mono">${Object.keys(S.items).length}</b><br>Сейчас в «красной зоне»: <b class="mono">${red}</b><br>Уроков пройдено: <b class="mono">${Object.values(S.units).reduce((a,b)=>a+b,0)}</b></p>
+      </div>
+      <div class="card"><div class="eyebrow">Настройки</div>
+      <button class="ghost-btn" id="toggleMute">${S.mute?'Звук выключен — включить':'Звук включён — выключить'}</button>
+      <p class="note">Если звука нет на iPhone, проверь переключатель «Без звука» сбоку телефона.</p>
       <button class="ghost-btn" id="reset">Сбросить прогресс</button></div>`;
   }else{
-    body=`<p class="note" style="margin-top:16px">Шпаргалка по всем схемам. «Скрыть всё» закрывает пункты: вспомни их сам и открывай по одному касанием.</p>`+
-    COURSES.map(c=>`<div class="chead small"><h2>${esc(c.t)}</h2></div>`+c.units.map(u=>`<details class="sch" data-sch="${u.id}"><summary><h3>${esc(u.t)}</h3><span>${esc(u.sub)}</span></summary>
+    body=`<div class="card intro-s"><h2>Схемы проверки</h2><p>Каждый шаг: немецкий термин, норма и вопрос по-русски, который нужно себе задать. Нажми «Проверь себя» — термины и нормы скроются, останутся вопросы. Вспомни шаг и открой его касанием.</p></div>`+
+    COURSES.map(c=>{
+      const list=[];
+      c.units.forEach(u=>{const h=SCHEMES.find(x=>x.unit===u.id); if(h)list.push(h); else if(u.ordered)list.push(autoScheme(u))});
+      return list.length?`<div class="chead small"><h2>${esc(c.t)}</h2></div>`+list.map(schemeHTML).join(''):'';
+    }).join('')+
+    `<div class="chead small"><h2>Все нормы по темам</h2></div><p class="note">Справочник: все понятия каждого блока с пояснениями.</p>`+
+    ALLU.map(u=>`<details class="sch" data-sch="${u.id}"><summary><h3>${esc(u.t)}</h3><span>${esc(u.sub)}</span></summary>
       ${u.steps.map((s,i)=>`<div class="row"><span class="n">${u.ordered?String(i+1).padStart(2,'0'):'·'}</span><div class="bd"><div class="k">${esc(s.k)}</div><span class="p">${esc(s.p)}</span><div class="ru">${esc(s.ru)}</div><div class="d">${esc(s.d)}</div></div></div>`).join('')}
-      <div class="schtools"><button class="chip" data-hide="${u.id}">Скрыть всё</button><button class="chip" data-show="${u.id}">Показать всё</button></div></details>`).join('')).join('');
+      <div class="schtools"><button class="chip" data-hide="${u.id}">Скрыть всё</button><button class="chip" data-show="${u.id}">Показать всё</button></div></details>`).join('');
   }
   const badge=dueIds().length;
   app.innerHTML=`<div class="wrap">${header()}${body}</div>
@@ -806,11 +1057,15 @@ app.addEventListener('click',e=>{
   if(n){const u=unitById(n.dataset.unit);if(!unlocked(u))return;startLesson(buildUnitLesson(u),u);return}
   if(e.target.closest('#startReview')){const ex=buildReview();if(ex.length)startLesson(ex,null,'review');return}
   if(e.target.closest('#startCases')){const ex=buildCaseMix();if(ex.length)startLesson(ex,null,'cases');return}
+  if(e.target.closest('#toggleMute')){S.mute=!S.mute;save();if(!S.mute)sound('ok');renderHome();return}
   const rs=e.target.closest('#reset');
   if(rs){if(rs.dataset.armed){S=blank();save();renderHome()}else{rs.dataset.armed='1';rs.textContent='Точно сбросить? Нажми ещё раз';rs.classList.add('danger')}return}
   const h=e.target.closest('[data-hide],[data-show]');
   if(h){const id=h.dataset.hide||h.dataset.show;document.querySelectorAll(`[data-sch="${id}"] .row`).forEach(r=>r.classList.toggle('hid',!!h.dataset.hide));return}
-  const r=e.target.closest('.row.hid'); if(r)r.classList.remove('hid');
+  const r=e.target.closest('.row.hid'); if(r){r.classList.remove('hid');return}
+  const qz=e.target.closest('[data-quiz],[data-unquiz]');
+  if(qz){const id=qz.dataset.quiz||qz.dataset.unquiz;document.querySelectorAll(`[data-flow="${id}"] [data-fh]`).forEach(f=>f.classList.toggle('hid',!!qz.dataset.quiz));return}
+  const fh=e.target.closest('.fhide.hid'); if(fh)fh.classList.remove('hid');
 });
 
 /* ============ LESSON ============ */
@@ -860,18 +1115,18 @@ function renderLesson(){
       if(x.kind==='match')ex=ok?'Все пары найдены без ошибок.':`Все пары найдены, ошибок: ${L.m.err}. Эти понятия ещё встретятся.`;
       else ex=`${!ok&&x.kind!=='order'&&!x.tf?`Правильно: <b>${esc(x.ans)}</b><br>`:''}${!ok&&x.kind==='order'?'Правильный порядок:<br>':''}${x.expl}${L.requeued?'<br><i>Этот вопрос вернётся в конце урока.</i>':''}`;
       foot=`<div class="lfoot ${ok?'ok':'bad'}"><div class="inner"><p class="verdict">${ok?pick(['Верно!','Отлично!','Так держать!','Richtig!']):'Не совсем'}</p>
-        <p class="expl">${ex}</p><button class="big-btn" id="next">Дальше</button></div></div>`;
+        <p class="expl">${ex}</p><div class="frowbtn">${!ok?'<button class="rule-btn" id="ruleBtn">Правило</button>':''}<button class="big-btn" id="next">Дальше</button></div></div></div>`;
     }
   }
   const pct=L.pos/L.ex.length*100;
   let el=document.querySelector('.lesson');
   if(!el){el=document.createElement('div');el.className='lesson';document.body.appendChild(el);el.addEventListener('click',lessonClick)}
-  el.innerHTML=`<div class="lhead"><button class="x" id="quit" aria-label="Выйти">${ICON.x}</button><div class="prog"><i style="width:${pct}%"></i></div><span class="cnt">${L.pos+1}/${L.ex.length}</span></div>
-  <div class="lbody"><div class="inner">${inner}</div></div>${foot}`;
+  el.innerHTML=`<div class="lhead"><button class="x" id="quit" aria-label="Выйти">${ICON.x}</button><div class="prog"><i style="width:${pct}%"></i></div><span class="cnt">${L.pos+1}/${L.ex.length}</span><button class="x" id="mute" aria-label="Звук">${S.mute?ICON.off:ICON.on}</button></div>
+  <div class="lbody"><div class="inner">${inner}</div></div>${foot}${L.rule?`<div class="sheet-bg" id="ruleBg"><div class="sheet"><button class="x sheet-x" id="ruleX" aria-label="Закрыть">${ICON.x}</button>${ruleHTML(x)}<button class="big-btn" id="ruleX2">Понятно</button></div></div>`:''}`;
   const b=el.querySelector('.lbody'); if(b&&!L.keepScroll)b.scrollTop=0; L.keepScroll=false;
 }
 function afterCheck(x,ok){
-  L.lastOk=ok;L.checked=true;L.requeued=false;
+  L.lastOk=ok;L.checked=true;L.requeued=false;sound(ok?'ok':'bad');
   if(x.id&&!L.graded.has(x.id)){grade(x.id,ok);L.graded.add(x.id);if(ok)L.firstTry++}
   if(!ok&&x.kind!=='match'&&!x.again){
     const again=Object.assign({},x,{again:true});
@@ -882,9 +1137,13 @@ function afterCheck(x,ok){
 }
 function lessonClick(e){
   if(e.target.closest('#quit')||e.target.closest('#finish')){closeLesson();return}
+  if(e.target.closest('#mute')){S.mute=!S.mute;save();L.keepScroll=true;renderLesson();return}
+  if(e.target.closest('#ruleBtn')){L.rule=true;L.keepScroll=true;renderLesson();return}
+  if(e.target.id==='ruleBg'||e.target.closest('#ruleX')||e.target.closest('#ruleX2')){L.rule=false;L.keepScroll=true;renderLesson();return}
+  if(L.rule)return;
   const x=L.ex[L.pos];
   if(e.target.closest('#next')){
-    L.pos++;L.pick=null;L.order=[];L.checked=false;L.m=null;
+    L.pos++;L.pick=null;L.order=[];L.checked=false;L.m=null;L.rule=false;
     if(L.pos>=L.ex.length)finishLesson();else renderLesson();return;
   }
   if(L.checked||isInfo(x))return;
@@ -895,7 +1154,7 @@ function lessonClick(e){
   const mr=e.target.closest('[data-mr]');
   if(mr&&L.m.sl!==null){
     const r=+mr.dataset.mr;
-    if(r===L.m.sl){L.m.ok.add(r);L.m.bad=null}else{L.m.err++;L.m.bad=[L.m.sl,r]}
+    if(r===L.m.sl){L.m.ok.add(r);L.m.bad=null;if(L.m.ok.size<x.L.length)sound('tap')}else{L.m.err++;L.m.bad=[L.m.sl,r];sound('bad')}
     L.m.sl=null;L.keepScroll=true;
     if(L.m.ok.size===x.L.length){afterCheck(x,L.m.err===0);return}
     renderLesson();return;
@@ -913,7 +1172,7 @@ function finishLesson(){
   if(S.lastDay!==t){S.streak=(S.lastDay===t-1)?S.streak+1:1;S.lastDay=t}
   let lvName='';
   if(L.unit){lvName=LEVELS[Math.min(done(L.unit),MAXL-1)];S.units[L.unit.id]=done(L.unit)+1}
-  save();
+  save();sound('done');
   const d=L.unit?done(L.unit):0;
   let nextTip='';
   if(L.unit){
