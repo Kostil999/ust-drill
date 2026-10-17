@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>USt Schema-Drill</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Тренажёр схем проверки к Steuerberaterprüfung: Umsatzsteuer, Einkommensteuer, Körperschaftsteuer.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Schema-Drill">
+<meta name="theme-color" content="#EEF2EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D1410" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a tax-form sheet — ruled rows, green "Kennzahl" boxes for paragraphs, one-column phone app with bottom tabs */
+:root{
+  --paper:#EEF2EC; --sheet:#FFFFFF; --ink:#15231A; --muted:#5B6D61; --rule:#CAD6CB;
+  --form:#1E6A44; --form-soft:#DBEBDD; --on-form:#FFFFFF;
+  --red:#B13F2A; --red-soft:#F5DED7; --gold:#A97E14; --gold-soft:#F3E7C4;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0D1410; --sheet:#151F19; --ink:#E4EDE6; --muted:#90A396; --rule:#2A3A30;
+  --form:#5BBF89; --form-soft:#1A3226; --on-form:#0D1410;
+  --red:#E27D66; --red-soft:#3A1F18; --gold:#E2B54B; --gold-soft:#3A2F14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0D1410; --sheet:#151F19; --ink:#E4EDE6; --muted:#90A396; --rule:#2A3A30;
+  --form:#5BBF89; --form-soft:#1A3226; --on-form:#0D1410;
+  --red:#E27D66; --red-soft:#3A1F18; --gold:#E2B54B; --gold-soft:#3A2F14; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+:root{padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;margin:0}
+button:focus-visible{outline:2px solid var(--form);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(110px + env(safe-area-inset-bottom,0px))}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:6px 14px;border-bottom:2px solid var(--ink)}
+.brand h1{margin:0;font-family:var(--f-display);font-stretch:72%;font-weight:800;font-size:30px;line-height:1;letter-spacing:-.01em;text-transform:uppercase}
+.brand p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.stats{display:flex;gap:8px}
+.stat{border:1.5px solid var(--rule);background:var(--sheet);padding:4px 8px;text-align:right;min-width:58px}
+.stat b{display:block;font-family:var(--f-mono);font-size:17px;line-height:1.1}
+.stat span{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.goal{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.goal .bar{flex:1;height:8px;background:var(--rule);position:relative;overflow:hidden}
+.goal .bar i{position:absolute;inset:0 auto 0 0;background:var(--form)}
+.goal b{color:var(--ink);font-family:var(--f-mono);font-weight:600}
+
+.course{margin-top:26px}
+.chead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1.5px solid var(--rule);padding-bottom:6px}
+.chead h2{margin:0;font-family:var(--f-display);font-stretch:75%;font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:.01em}
+.chead p{margin:0;font-size:12px;color:var(--muted)}
+.chead.small{margin-top:24px}
+.path{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.node{display:flex;align-items:center;gap:14px;padding:8px 0;text-align:left;width:100%}
+.node:nth-child(4n+2){padding-left:28px}.node:nth-child(4n+3){padding-left:56px}.node:nth-child(4n+4){padding-left:28px}
+.kz{flex:none;width:68px;height:68px;border:2px solid var(--form);background:var(--sheet);display:grid;place-items:center;position:relative;font-family:var(--f-mono);font-weight:600;font-size:15px;color:var(--form);box-shadow:4px 4px 0 var(--form);text-align:center;line-height:1.1;padding:4px}
+.kz small{position:absolute;top:2px;left:4px;font-size:9px;color:var(--muted);font-weight:500}
+.node.locked .kz{border-style:dashed;border-color:var(--rule);color:var(--muted);box-shadow:none;background:transparent}
+.node.gold .kz{border-color:var(--gold);color:var(--gold);box-shadow:4px 4px 0 var(--gold);background:var(--gold-soft)}
+.node.next .kz{background:var(--form);color:var(--on-form)}
+.node.next .kz small{color:var(--on-form);opacity:.8}
+.ninfo{min-width:0}
+.ninfo h3{margin:0;font-family:var(--f-display);font-stretch:85%;font-size:18px;font-weight:700;line-height:1.15;text-wrap:balance}
+.ninfo p{margin:2px 0 6px;font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.ninfo em{display:block;margin-top:5px;font-style:normal;font-size:12px;color:var(--muted)}
+.node.next .ninfo em{color:var(--form);font-weight:600}
+.pips{display:flex;gap:4px}.pips i{width:14px;height:5px;background:var(--rule)}.pips i.on{background:var(--form)}
+.node.gold .pips i.on{background:var(--gold)}
+.node.locked .ninfo{opacity:.55}
+
+.card{background:var(--sheet);border:1.5px solid var(--rule);padding:16px;margin-top:16px}
+.card h2{margin:0 0 6px;font-family:var(--f-display);font-stretch:80%;font-size:22px;font-weight:800;text-wrap:balance}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.card.welcome{border-color:var(--form);border-width:2px}
+.card.nudge{background:var(--gold-soft);border-color:var(--gold)}
+.card.nudge p{color:var(--ink)}
+.big-btn{display:block;width:100%;margin-top:14px;background:var(--form);color:var(--on-form);font-weight:700;font-size:16px;padding:14px;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 4px 0 color-mix(in srgb,var(--form) 60%,var(--ink))}
+.lfoot .big-btn{margin-top:10px}
+.big-btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--form) 60%,var(--ink))}
+.big-btn[disabled]{background:var(--rule);color:var(--muted);box-shadow:none;cursor:default;transform:none}
+.ghost-btn{display:block;width:100%;margin-top:14px;border:1.5px solid var(--rule);padding:12px;font-weight:600;color:var(--muted)}
+.ghost-btn.danger{color:var(--red);border-color:var(--red)}
+
+.sch{margin-top:10px;background:var(--sheet);border:1.5px solid var(--rule)}
+.sch summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sch summary::-webkit-details-marker{display:none}
+.sch summary h3{margin:0;font-family:var(--f-display);font-stretch:85%;font-size:17px}
+.sch summary span{font-family:var(--f-mono);font-size:11px;color:var(--form);text-align:right}
+.row{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:10px 16px;border-top:1px solid var(--rule)}
+.row .n{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:2px}
+.row .bd{min-width:0}
+.row .k{font-weight:700}
+.row .p,.p{display:inline-block;margin:3px 0;font-family:var(--f-mono);font-size:12px;background:var(--form-soft);color:var(--form);padding:1px 6px}
+.row .ru{font-size:14px}
+.row .d{font-size:13px;color:var(--muted);font-style:italic}
+.row.hid .bd{cursor:pointer;background:repeating-linear-gradient(-45deg,var(--rule) 0 2px,transparent 2px 9px);min-height:44px}
+.row.hid .bd>*{visibility:hidden}
+.schtools{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--rule)}
+.chip{border:1.5px solid var(--form);color:var(--form);padding:6px 10px;font-size:13px;font-weight:600}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--sheet);border-top:2px solid var(--ink);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:5}
+.tabs button{flex:1;max-width:186px;padding:10px 4px 12px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+.tabs button.on{color:var(--form)}
+.tabs .badge{position:absolute;top:6px;left:calc(50% + 8px);background:var(--red);color:var(--sheet);font-family:var(--f-mono);font-size:10px;padding:0 5px;min-width:18px;text-align:center}
+
+.lesson{position:fixed;inset:0;background:var(--paper);z-index:20;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.lhead{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));max-width:560px;width:100%;margin:0 auto}
+.lhead .x{width:36px;height:36px;display:grid;place-items:center;color:var(--muted)}
+.lhead .x svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.4;fill:none}
+.lhead .cnt{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.prog{flex:1;height:12px;background:var(--rule);position:relative;overflow:hidden}
+.prog i{position:absolute;inset:0 auto 0 0;background:var(--form);transition:width .3s}
+.lbody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.lbody .inner{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px 24px}
+.qlabel{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qlabel .tag{font-family:var(--f-mono);font-size:11px;border:1.5px solid var(--form);color:var(--form);padding:1px 6px}
+.qlabel .tag.ghost{border-color:var(--rule);color:var(--muted)}
+.q{margin:10px 0 4px;font-family:var(--f-display);font-stretch:82%;font-weight:700;font-size:23px;line-height:1.2;text-wrap:balance}
+.qhint{font-size:13px;color:var(--muted);margin-bottom:18px}
+.theory{margin-top:14px;font-size:17px;line-height:1.55;background:var(--sheet);border:1.5px solid var(--rule);border-left:6px solid var(--form);padding:16px}
+.theory b{color:var(--form)}
+.teach{margin-top:16px;background:var(--sheet);border:2px solid var(--form);box-shadow:6px 6px 0 var(--form);padding:20px 18px}
+.teach .tk{font-family:var(--f-display);font-stretch:78%;font-weight:800;font-size:28px;line-height:1.1;text-wrap:balance}
+.teach .tp{display:inline-block;margin-top:10px;font-family:var(--f-mono);font-size:14px;font-weight:600;background:var(--form);color:var(--on-form);padding:3px 8px}
+.teach .tru{font-size:18px;margin:16px 0 0}
+.teach .tde{margin-top:16px;border-top:1px dashed var(--rule);padding-top:10px}
+.teach .tde p{margin:4px 0 0;font-size:14px;color:var(--muted);font-style:italic}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opts.tf{flex-direction:row}.opts.tf .opt{flex:1;grid-template-columns:1fr;text-align:center;font-weight:700}
+.opt{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;text-align:left;background:var(--sheet);border:2px solid var(--rule);padding:12px;font-size:16px;box-shadow:0 3px 0 var(--rule)}
+.opt .l{font-family:var(--f-mono);font-size:12px;color:var(--muted);border:1.5px solid var(--rule);width:26px;height:26px;display:grid;place-items:center}
+.mono-o{font-family:var(--f-mono);font-size:14px}
+.opt.sel{border-color:var(--form);background:var(--form-soft);box-shadow:0 3px 0 var(--form)}
+.opt.sel .l{border-color:var(--form);color:var(--form)}
+.opt.right{border-color:var(--form);background:var(--form-soft)}
+.opt.wrong{border-color:var(--red);background:var(--red-soft);box-shadow:0 3px 0 var(--red)}
+.opt[disabled]{cursor:default}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mcol{display:flex;flex-direction:column;gap:10px;min-width:0}
+.mi{background:var(--sheet);border:2px solid var(--rule);box-shadow:0 3px 0 var(--rule);padding:10px;font-size:14px;text-align:left;min-height:58px;overflow-wrap:anywhere}
+.mi.mono-o{font-size:12px}
+.mi.sel{border-color:var(--form);background:var(--form-soft)}
+.mi.ok{border-color:var(--form);color:var(--form);opacity:.45;box-shadow:none}
+.mi.bad{border-color:var(--red);background:var(--red-soft)}
+.mhelp{margin:0;padding-block:6px;color:var(--muted);font-size:14px;text-align:center}
+
+.form{background:var(--sheet);border:1.5px solid var(--rule);margin-bottom:16px}
+.frow{display:grid;grid-template-columns:30px 1fr;gap:8px;padding:9px 12px;border-top:1px solid var(--rule);font-size:15px;min-height:24px;align-items:center}
+.frow:first-child{border-top:0}
+.frow .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.frow.gap .v{border:2px dashed var(--form);padding:4px 8px;color:var(--form);font-weight:700}
+.slot{cursor:pointer}
+.slot .v{min-height:22px}
+.slot.empty .v{border-bottom:1.5px dashed var(--rule)}
+.slot.filled .v{font-weight:600}
+.tokens{display:flex;flex-wrap:wrap;gap:8px}
+.tok{background:var(--sheet);border:2px solid var(--rule);padding:8px 12px;font-size:15px;box-shadow:0 3px 0 var(--rule);text-align:left}
+.tok.used{visibility:hidden}
+
+.lfoot{border-top:2px solid var(--rule);background:var(--paper);padding-bottom:env(safe-area-inset-bottom,0px)}
+.lfoot.ok{background:var(--form-soft);border-color:var(--form)}
+.lfoot.bad{background:var(--red-soft);border-color:var(--red)}
+.lfoot .inner{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 14px}
+.verdict{font-family:var(--f-display);font-stretch:80%;font-weight:800;font-size:21px;margin:0 0 4px}
+.lfoot.ok .verdict{color:var(--form)}.lfoot.bad .verdict{color:var(--red)}
+.expl{font-size:14px;margin:0;max-height:32vh;overflow-y:auto}
+.expl .p{font-size:12px}
+.lfoot.bad .big-btn{background:var(--red);box-shadow:0 4px 0 color-mix(in srgb,var(--red) 60%,var(--ink));color:var(--sheet)}
+@media (prefers-reduced-motion:no-preference){.lfoot.ok,.lfoot.bad{animation:up .22s ease-out}@keyframes up{from{transform:translateY(16px);opacity:.4}to{transform:none;opacity:1}}}
+
+.result{text-align:center;padding-top:30px}
+.result .stamp{display:inline-block;border:3px solid var(--form);color:var(--form);font-family:var(--f-display);font-stretch:70%;font-weight:800;font-size:34px;text-transform:uppercase;padding:6px 18px;transform:rotate(-4deg);letter-spacing:.02em}
+.rsub{margin-top:18px;color:var(--muted)}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:22px}
+.rgrid div{background:var(--sheet);border:1.5px solid var(--rule);padding:10px 6px}
+.rgrid b{display:block;font-family:var(--f-mono);font-size:22px}
+.rgrid span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin-top:16px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ============ CONTENT ============
+   Steps: k = Begriff (DE), p = Norm, d = Formulierung für die Klausur (DE), ru = простое объяснение
+   Cases: q = Fall (DE), o = options, a = index of correct, e = объяснение (RU)
+*/
+const COURSES = [
+{id:'start', t:'Старт', sub:'Основы, без которых дальше трудно', units:[
+{id:'zit', t:'Как читать законы', sub:'§ · Abs. · S. · Nr.', kz:'§', ordered:false, plabel:'Найди сокращение',
+ theory:[
+  {h:'Зачем это приложение', t:'На Steuerberaterprüfung решают <b>Fälle</b> — короткие истории, которые надо разобрать по схеме. Ответ без ссылки на норму почти не приносит баллов. Поэтому здесь ты учишь две вещи: <b>порядок проверки</b> и <b>параграф</b> к каждому шагу.'},
+  {h:'Как устроен закон', t:'Немецкий закон делится на параграфы (<b>§</b>). Параграф — на абзацы (<b>Abs.</b>), абзацы — на предложения (<b>S.</b>). Внутри бывают номера (<b>Nr.</b>) и буквы (<b>Buchst.</b>).<br><br>Пример: <span class="p">§ 3 Abs. 6 S. 1 UStG</span> — закон об НДС, параграф 3, абзац 6, предложение 1.'},
+  {h:'Как здесь учиться', t:'Каждый блок начинается с короткой теории. Новые понятия вводятся по 3–4 за урок, с простыми вопросами. Нормы, схема целиком и экзаменационные Fälle появляются только с 3-го урока. Ошибки сами попадают во вкладку «Повторить».'}
+ ],
+ steps:[
+  {k:'Paragraph', p:'§', d:'Grundeinheit eines Gesetzes.', ru:'Основная единица закона, как «статья».'},
+  {k:'Absatz', p:'Abs.', d:'Unterteilung eines Paragraphen, im Text (1), (2) …', ru:'Часть параграфа, в тексте отмечена (1), (2) …'},
+  {k:'Satz', p:'S.', d:'Einzelner Satz innerhalb eines Absatzes.', ru:'Отдельное предложение внутри абзаца.'},
+  {k:'Nummer', p:'Nr.', d:'Aufzählungspunkt mit Ziffer.', ru:'Пункт перечня с цифрой: 1., 2., 3. …'},
+  {k:'Buchstabe', p:'Buchst.', d:'Aufzählungspunkt mit Buchstaben.', ru:'Подпункт с буквой: a), b), c) …'},
+  {k:'Halbsatz', p:'Hs.', d:'Teil eines Satzes, meist durch Semikolon getrennt.', ru:'Половина предложения — до или после точки с запятой.'},
+  {k:'in Verbindung mit', p:'i.V.m.', d:'Zwei Normen werden zusammen angewendet.', ru:'«В связи с» — две нормы применяются вместе.'},
+  {k:'Verwaltungsanweisung', p:'R / UStAE', d:'Richtlinien und Anwendungserlasse der Finanzverwaltung (EStR, KStR, UStAE).', ru:'Указания налоговой администрации: не закон, но на экзамене используются.'}
+ ],
+ cases:[
+  {q:'Was bedeutet „§ 4 Nr. 12 S. 1 Buchst. a UStG"?', o:['Paragraph 4, Nummer 12, Satz 1, Buchstabe a','Paragraph 4, Absatz 12, Seite 1','Artikel 4, Kapitel 12','Paragraph 12, Nummer 4'], a:0, e:'Читаем слева направо, от крупного к мелкому: §, номер, предложение, буква.'},
+  {q:'Was ist ein „Fall" in der Klausur?', o:['Ein Sachverhalt, den man mit Schema und Normen löst','Eine Theoriefrage ohne Normen','Eine Rechenaufgabe ohne Gesetz','Ein mündlicher Vortrag'], a:0, e:'Письменный экзамен — набор Fälle: дан Sachverhalt, нужно пройти схему и назвать нормы.'},
+  {q:'Welches Gesetz regelt die Umsatzsteuer?', o:['UStG','EStG','KStG','AO'], a:0, e:'UStG — НДС, EStG — подоходный налог, KStG — налог на прибыль корпораций, AO — общие правила.'},
+  {q:'Was ist die AO?', o:['Abgabenordnung – allgemeines Steuerverfahrensrecht','Ein Steuersatz','Eine Durchführungsverordnung zur USt','Eine Richtlinie'], a:0, e:'Abgabenordnung — «общая часть» налогового права: сроки, процедуры, Wohnsitz (§ 8 AO) и т. д.'}
+ ]}
+]},
+
+{id:'ust', t:'Umsatzsteuer', sub:'НДС — первая письменная работа', units:[
+{id:'ust0', t:'Как работает НДС', sub:'Netto, Brutto, Vorsteuer', kz:'USt', ordered:false,
+ theory:[
+  {h:'Что такое Umsatzsteuer', t:'Umsatzsteuer (USt), в быту Mehrwertsteuer, — немецкий НДС. Её начисляет <b>Unternehmer</b> на свои продажи, но фактически платит <b>Endverbraucher</b>: налог уже заложен в цену.'},
+  {h:'Netto и Brutto', t:'<b>Netto</b> — цена без налога, <b>Brutto</b> — с налогом. Обычная ставка 19 %:<br>100 € netto × 1,19 = 119 € brutto.<br>Обратно: 119 € / 1,19 = 100 € netto.'},
+  {h:'Vorsteuer и Zahllast', t:'Покупая что-то для бизнеса, предприниматель сам платит USt поставщику — это <b>Vorsteuer</b>. Её он вычитает. В налоговую уходит только разница — <b>Zahllast</b>.<br><br>Продал за 119 € (USt 19 €), купил за 59,50 € (Vorsteuer 9,50 €) → Zahllast 9,50 €.'},
+  {h:'Главный маршрут', t:'Почти каждая задача по USt идёт так: <b>steuerbar?</b> → <b>steuerfrei?</b> → <b>сколько?</b> → <b>когда?</b> → <b>кто платит?</b> Плюс отдельно: <b>Vorsteuer</b>. Каждый шаг ты выучишь в своём блоке.'}
+ ],
+ steps:[
+  {k:'Umsatzsteuer', p:'§ 1 UStG', d:'Steuer auf Umsätze von Unternehmern; wirtschaftlich trägt sie der Endverbraucher.', ru:'Налог на обороты предпринимателей; фактически платит конечный покупатель.'},
+  {k:'Vorsteuer', p:'§ 15 UStG', d:'In Eingangsrechnungen ausgewiesene USt, die der Unternehmer abziehen darf.', ru:'НДС из входящих счетов, который предприниматель вычитает.'},
+  {k:'Zahllast', p:'§ 16 Abs. 1, 2 UStG', d:'Umsatzsteuer abzüglich Vorsteuer = Betrag an das Finanzamt.', ru:'USt минус Vorsteuer — то, что реально уходит в налоговую.'},
+  {k:'Regelsteuersatz', p:'§ 12 Abs. 1 UStG', d:'19 % der Bemessungsgrundlage.', ru:'Обычная ставка — 19 %.'},
+  {k:'Ermäßigter Steuersatz', p:'§ 12 Abs. 2 UStG', d:'7 %, z. B. für die meisten Lebensmittel und Bücher (Anlage 2).', ru:'Пониженная ставка 7 % — продукты, книги и др.'},
+  {k:'Umsatzsteuer-Voranmeldung', p:'§ 18 Abs. 1, 2 UStG', d:'Bis zum 10. Tag nach Ablauf des Voranmeldungszeitraums (Monat oder Quartal).', ru:'Декларация за месяц или квартал — до 10-го числа следующего месяца.'},
+  {k:'Rechnung', p:'§ 14 UStG', d:'Dokument über eine Leistung mit den Pflichtangaben des § 14 Abs. 4.', ru:'Счёт с обязательными реквизитами — без него нет Vorsteuer.'}
+ ],
+ cases:[
+  {q:'Netto 200 €, Regelsteuersatz. Brutto?', o:['238 €','219 €','214 €','200 €'], a:0, e:'200 € × 1,19 = 238 €, из них USt 38 €.'},
+  {q:'U verkauft für 1.190 € brutto und kauft für 595 € brutto ein (beides 19 %). Zahllast?', o:['95 €','190 €','595 €','0 €'], a:0, e:'USt 190 € − Vorsteuer 95 € = Zahllast 95 €.'},
+  {q:'Wer trägt die Umsatzsteuer wirtschaftlich?', o:['Der Endverbraucher','Der Hersteller','Jeder Unternehmer in der Kette','Das Finanzamt'], a:0, e:'Предприниматели передают налог дальше через Vorsteuer; у конечного покупателя вычета нет.'},
+  {q:'Brutto 107 €, ermäßigter Satz. Wie viel USt steckt drin?', o:['7 €','7,49 €','17,09 €','10,70 €'], a:0, e:'107 € / 1,07 = 100 € netto → USt 7 €.'}
+ ]},
+
+{id:'stb', t:'Steuerbarkeit', sub:'§ 1 Abs. 1 Nr. 1 UStG', kz:'§ 1', ordered:true,
+ theory:[
+  {h:'Steuerbar — первый вопрос', t:'Прежде чем считать налог, проверяем: попадает ли сделка вообще под UStG? Это <b>Steuerbarkeit</b>, § 1 Abs. 1 Nr. 1 UStG. Если не выполнен хотя бы один признак — <b>nicht steuerbar</b>, и дальше не проверяем.'},
+  {h:'Пять признаков', t:'1. <b>Leistung</b> — Lieferung (товар) или sonstige Leistung (услуга)<br>2. <b>Unternehmer</b><br>3. <b>im Inland</b> — место сделки в Германии<br>4. <b>gegen Entgelt</b> — за плату<br>5. <b>im Rahmen des Unternehmens</b> — в рамках бизнеса'},
+  {h:'Пример', t:'Пекарь продаёт булочку в своей пекарне: товар, предприниматель, Германия, за деньги, в рамках бизнеса → <b>steuerbar</b>.<br><br>Тот же пекарь продаёт свой личный велосипед → не в рамках бизнеса → <b>nicht steuerbar</b>.'}
+ ],
+ steps:[
+  {k:'Lieferung oder sonstige Leistung', p:'§ 3 Abs. 1 / Abs. 9 UStG', d:'Verschaffung der Verfügungsmacht (Lieferung) oder jede andere Leistung (sonstige Leistung).', ru:'Есть ли поставка товара или услуга?'},
+  {k:'Unternehmer', p:'§ 2 Abs. 1 S. 1, 3 UStG', d:'Selbstständige, nachhaltige Tätigkeit zur Erzielung von Einnahmen.', ru:'Тот, кто самостоятельно и постоянно ведёт деятельность ради дохода.'},
+  {k:'Im Inland', p:'§ 1 Abs. 2 UStG', d:'Der Ort der Leistung liegt im Inland; ohne Büsingen, Helgoland, Freihäfen u. a.', ru:'Место сделки — Германия (кроме Гельголанда, Бюзингена, свободных портов).'},
+  {k:'Gegen Entgelt', p:'§ 1 Abs. 1 Nr. 1 UStG', d:'Leistungsaustausch: Leistung und Gegenleistung sind innerlich verknüpft.', ru:'Есть обмен: товар или услуга за оплату.'},
+  {k:'Im Rahmen des Unternehmens', p:'§ 2 Abs. 1 S. 2 UStG', d:'Die Leistung gehört zum unternehmerischen Bereich – auch Hilfsgeschäfte.', ru:'Сделка относится к бизнесу, а не к частной жизни.'}
+ ],
+ cases:[
+  {q:'Schreiner S verkauft seinen Privat-Pkw, der nie dem Unternehmen zugeordnet war. Woran scheitert die Steuerbarkeit?', o:['Im Rahmen des Unternehmens','Unternehmer','Gegen Entgelt','Sie scheitert nicht – steuerbar'], a:0, e:'S — предприниматель, но машина личная: признак «im Rahmen des Unternehmens» (§ 2 Abs. 1 S. 2) не выполнен → nicht steuerbar.'},
+  {q:'Ärztin A verkauft ihr altes betriebliches Ultraschallgerät. Ist der Verkauf steuerbar?', o:['Ja, als Hilfsgeschäft im Rahmen des Unternehmens','Nein, Ärzte sind keine Unternehmer','Nein, es fehlt die Nachhaltigkeit','Nein, kein Leistungsaustausch'], a:0, e:'Продажа оборудования — Hilfsgeschäft, оно входит в рамки бизнеса → steuerbar. Дальше проверяют освобождение (здесь § 4 Nr. 28 UStG).'},
+  {q:'Unternehmer U erhält von einer Versicherung echten Schadensersatz für seinen beschädigten Lkw. Steuerbar?', o:['Nein – kein Leistungsaustausch, also kein Entgelt','Ja – sonstige Leistung des U','Ja – Lieferung des Lkw','Nein – nicht im Inland'], a:0, e:'Настоящее возмещение ущерба — не плата за услугу, обмена нет → «gegen Entgelt» не выполнено.'},
+  {q:'Gehört Helgoland zum Inland im Sinne des § 1 Abs. 2 S. 1 UStG?', o:['Nein','Ja','Nur für Lieferungen','Nur für B2C-Leistungen'], a:0, e:'§ 1 Abs. 2 S. 1 UStG прямо исключает Büsingen, Helgoland и свободные порты.'}
+ ]},
+
+{id:'ges', t:'Gesamtschema Umsatz', sub:'§§ 1–13b UStG', kz:'§ 1–13', ordered:true,
+ theory:[
+  {h:'Задача целиком', t:'Steuerbarkeit — только начало. Полная проверка оборота идёт в 7 шагов: от «облагается ли» до «кто платит». Запоминай порядок как маршрут.'},
+  {h:'Маршрут', t:'Steuerbarkeit (§ 1) → Steuerbefreiung (§ 4) → Option (§ 9) → Bemessungsgrundlage (§ 10) → Steuersatz (§ 12) → Entstehung (§ 13) → Steuerschuldner (§§ 13a, 13b)'},
+  {h:'Подсказка', t:'Номера параграфов идут по возрастанию: 1, 4, 9, 10, 12, 13. Так легче не перепутать порядок.'}
+ ],
+ steps:[
+  {k:'Steuerbarkeit', p:'§ 1 Abs. 1 UStG', d:'Ist der Umsatz überhaupt steuerbar?', ru:'Облагается ли сделка вообще?'},
+  {k:'Steuerbefreiung', p:'§ 4 UStG', d:'Greift eine Befreiung, z. B. Ausfuhr, Vermietung, Heilbehandlung?', ru:'Есть ли освобождение от налога?'},
+  {k:'Option zur Steuerpflicht', p:'§ 9 UStG', d:'Kann oder hat der Unternehmer auf die Befreiung verzichtet?', ru:'Можно ли (и сделан ли) отказ от освобождения?'},
+  {k:'Bemessungsgrundlage', p:'§ 10 UStG', d:'Entgelt = alles, was der Empfänger aufwendet, abzüglich der Umsatzsteuer.', ru:'От какой суммы (нетто) считаем налог?'},
+  {k:'Steuersatz', p:'§ 12 UStG', d:'Regelsatz 19 % (Abs. 1) oder ermäßigt 7 % (Abs. 2).', ru:'19 % или 7 %?'},
+  {k:'Entstehung der Steuer', p:'§ 13 UStG', d:'Wann entsteht die Steuer – Soll- oder Istbesteuerung?', ru:'В каком периоде возникает налог?'},
+  {k:'Steuerschuldner', p:'§§ 13a, 13b UStG', d:'Leistender Unternehmer oder Leistungsempfänger (Reverse Charge)?', ru:'Кто должен заплатить налог?'}
+ ],
+ cases:[
+  {q:'Bruttopreis 1.190 €, Regelsteuersatz. Wie hoch ist die Bemessungsgrundlage?', o:['1.000 €','1.190 €','963,90 €','1.416,10 €'], a:0, e:'§ 10 Abs. 1 S. 2 UStG: база — без налога → 1.190 / 1,19 = 1.000 €.'},
+  {q:'Bruttopreis 214 €, ermäßigter Steuersatz. Bemessungsgrundlage?', o:['200 €','214 €','179,83 €','199,02 €'], a:0, e:'214 / 1,07 = 200 € — база, налог 14 €.'},
+  {q:'Wer schuldet die Umsatzsteuer im Regelfall?', o:['Der leistende Unternehmer','Der Leistungsempfänger','Das Finanzamt','Beide als Gesamtschuldner'], a:0, e:'§ 13a Abs. 1 Nr. 1 UStG — по общему правилу платит продавец. Исключения — § 13b.'},
+  {q:'Ein Umsatz ist nicht steuerbar. Was prüfst du als Nächstes?', o:['Nichts mehr – die Prüfung endet','Die Steuerbefreiung nach § 4','Die Bemessungsgrundlage','Den Steuerschuldner'], a:0, e:'Нет Steuerbarkeit — нет налога. Освобождения и ставки уже не важны.'}
+ ]},
+
+{id:'lief', t:'Ort der Lieferung', sub:'§§ 3 Abs. 6–8, 3c, 3e UStG', kz:'§ 3', ordered:false,
+ theory:[
+  {h:'Где произошла поставка?', t:'Признак «im Inland» проверяют через <b>Ort der Lieferung</b>. Если место поставки за границей, в Германии сделка nicht steuerbar.'},
+  {h:'Движется ли товар?', t:'<b>Bewegte Lieferung</b> — товар везут или отправляют: место там, где перевозка <b>начинается</b> (§ 3 Abs. 6).<br><br><b>Ruhende Lieferung</b> — товар к покупателю не везут (например, кухню монтируют на месте): место там, где товар находится в момент передачи (§ 3 Abs. 7).'},
+  {h:'Особые случаи', t:'Сначала проверь спецнормы: продажа частным лицам в другую страну ЕС (§ 3c), продажа на борту (§ 3e), ввоз из-за пределов ЕС (§ 3 Abs. 8). Reihengeschäft (§ 3 Abs. 6a) разберём в отдельном блоке.'}
+ ],
+ steps:[
+  {k:'Bewegte Lieferung', p:'§ 3 Abs. 6 S. 1 UStG', d:'Ort = dort, wo die Beförderung oder Versendung beginnt.', ru:'Товар перевозят — место там, где перевозка начинается.'},
+  {k:'Ruhende Lieferung', p:'§ 3 Abs. 7 S. 1 UStG', d:'Ort = dort, wo sich der Gegenstand bei Verschaffung der Verfügungsmacht befindet.', ru:'Товар не перевозят — место там, где он находится при передаче.'},
+  {k:'Reihengeschäft', p:'§ 3 Abs. 6a UStG', d:'Mehrere Unternehmer, Gegenstand gelangt unmittelbar zum letzten Abnehmer – nur eine Lieferung ist bewegt.', ru:'Цепочка продавцов, товар едет напрямую к последнему — «движется» только одна поставка.'},
+  {k:'Einfuhr aus dem Drittland', p:'§ 3 Abs. 8 UStG', d:'Schuldet der Lieferer die EUSt, gilt der Ort als im Einfuhrland gelegen.', ru:'Если продавец сам платит ввозной НДС — место поставки в стране ввоза.'},
+  {k:'Innergemeinschaftlicher Fernverkauf', p:'§ 3c Abs. 1 UStG', d:'Lieferung an Nichtunternehmer in einen anderen EU-Staat: Ort = Ende der Beförderung (EU-Schwelle 10.000 €).', ru:'Продажа частному лицу в другую страну ЕС — место там, куда доставили (порог 10.000 €).'},
+  {k:'Lieferung an Bord', p:'§ 3e UStG', d:'An Bord eines Schiffs, Flugzeugs oder einer Bahn innerhalb der EU: Abgangsort des Beförderungsmittels.', ru:'Продажа в поезде, самолёте, на корабле в ЕС — место отправления транспорта.'}
+ ],
+ cases:[
+  {q:'Händler H (Saarlouis) versendet Ware per Paketdienst an einen Unternehmer in Paris. Wo ist der Ort der Lieferung?', o:['Saarlouis','Paris','Ort der Rechnungsstellung','Sitz des Paketdienstes'], a:0, e:'Отправка посылкой — bewegte Lieferung, место там, где отправка начинается: Саарлуи (§ 3 Abs. 6 S. 1). Потом она освобождается как поставка в ЕС.'},
+  {q:'Schreiner baut beim Kunden in Saarbrücken eine Einbauküche ein (Werklieferung). Welche Ortsregel greift?', o:['§ 3 Abs. 7 S. 1 UStG – ruhende Lieferung','§ 3 Abs. 6 S. 1 UStG – bewegte Lieferung','§ 3a Abs. 1 UStG','§ 3c UStG'], a:0, e:'Покупатель получает кухню только после монтажа → ruhende Lieferung (§ 3 Abs. 7 S. 1), место — Саарбрюккен.'},
+  {q:'Online-Shop aus Saarlouis liefert an eine Privatperson in Wien; EU-weite Fernverkäufe 50.000 €/Jahr. Ort?', o:['Wien','Saarlouis','Ort der Bestellung','Nicht steuerbar'], a:0, e:'Порог 10.000 € превышен → § 3c Abs. 1: место там, где доставка заканчивается (Вена). Налог можно платить через OSS.'},
+  {q:'Wie viele bewegte Lieferungen gibt es in einem Reihengeschäft?', o:['Genau eine','Alle Lieferungen','Keine','Zwei'], a:0, e:'§ 3 Abs. 6a S. 1: перевозка приписывается только одной поставке, остальные — ruhend.'}
+ ]},
+
+{id:'reihe', t:'Reihengeschäft', sub:'§ 3 Abs. 6a, Abs. 7 S. 2 UStG', kz:'§ 3 6a', ordered:true,
+ theory:[
+  {h:'Что это', t:'Несколько предпринимателей продают <b>один и тот же товар</b> по цепочке, а товар едет <b>напрямую</b> от первого к последнему.<br><br>Пример: A (Саарлуи) → B (Кёльн) → C (Вена). Товар едет из Саарлуи сразу в Вену.'},
+  {h:'Главное правило', t:'Поставок две (A→B и B→C), но <b>перевозка приписывается только одной</b>. Она — <b>bewegt</b>, другая — <b>ruhend</b>. Какая именно движется, решает то, <b>кто везёт</b>.'},
+  {h:'Кто везёт?', t:'<b>A везёт</b> → движется A→B.<br><b>C забирает сам</b> → движется B→C.<br><b>B (посредник) везёт</b> → обычно A→B; но если B выступает с USt-IdNr. страны отправления — B→C.'},
+  {h:'Где ruhende Lieferungen', t:'Поставка <b>до</b> движущейся — там, где перевозка начинается (§ 3 Abs. 7 S. 2 Nr. 1).<br>Поставка <b>после</b> — там, где перевозка заканчивается (Nr. 2).'}
+ ],
+ steps:[
+  {k:'Reihengeschäft prüfen', p:'§ 3 Abs. 6a S. 1 UStG', d:'Mehrere Unternehmer, derselbe Gegenstand, unmittelbare Warenbewegung vom ersten Unternehmer zum letzten Abnehmer.', ru:'Цепочка продавцов + товар едет напрямую к последнему.'},
+  {k:'Bewegte Lieferung zuordnen', p:'§ 3 Abs. 6a S. 2–5 UStG', d:'Erster Lieferer befördert → seine Lieferung; letzter Abnehmer → Lieferung an ihn; Zwischenhändler → grds. Lieferung an ihn, bei USt-IdNr. des Abgangsstaats seine eigene.', ru:'Определяем «движущуюся» поставку по тому, кто организует перевозку.'},
+  {k:'Ort der bewegten Lieferung', p:'§ 3 Abs. 6 S. 1 UStG', d:'Beginn der Beförderung oder Versendung.', ru:'Движущаяся поставка — там, где начинается перевозка.'},
+  {k:'Ruhende Lieferung davor', p:'§ 3 Abs. 7 S. 2 Nr. 1 UStG', d:'Ort = Beginn der Beförderung oder Versendung.', ru:'Поставка до движущейся — в месте начала перевозки.'},
+  {k:'Ruhende Lieferung danach', p:'§ 3 Abs. 7 S. 2 Nr. 2 UStG', d:'Ort = Ende der Beförderung oder Versendung.', ru:'Поставка после движущейся — в месте окончания перевозки.'},
+  {k:'Befreiung nur für die bewegte Lieferung', p:'§ 4 Nr. 1 i.V.m. §§ 6, 6a UStG', d:'Ausfuhrlieferung oder ig. Lieferung kann nur die bewegte Lieferung sein.', ru:'Освобождение экспорта или поставки в ЕС бывает только у движущейся поставки.'}
+ ],
+ cases:[
+  {q:'A (Saarlouis) verkauft an B (Köln), B an C (Wien). A versendet die Ware direkt nach Wien. Welche Lieferung ist bewegt?', o:['A → B','B → C','Beide','Keine'], a:0, e:'Везёт первый продавец → движение приписывается его поставке (§ 3 Abs. 6a S. 2).'},
+  {q:'Gleicher Fall, aber C holt die Ware selbst in Saarlouis ab. Welche Lieferung ist bewegt?', o:['B → C','A → B','Beide','Keine'], a:0, e:'Забирает последний покупатель → движется поставка ему (§ 3 Abs. 6a S. 3).'},
+  {q:'B (Zwischenhändler) befördert selbst und tritt mit seiner deutschen USt-IdNr. auf (Abgangsstaat Deutschland). Welche Lieferung ist bewegt?', o:['B → C','A → B','Beide','Keine'], a:0, e:'Посредник везёт и использует номер страны отправления → движется его собственная поставка B→C (§ 3 Abs. 6a S. 4 Hs. 2).'},
+  {q:'Die Lieferung B → C ist bewegt (Saarlouis → Wien). Wo liegt der Ort der Lieferung A → B?', o:['Saarlouis','Wien','Köln','Kein Ort'], a:0, e:'A→B — ruhende Lieferung до движущейся → место начала перевозки (§ 3 Abs. 7 S. 2 Nr. 1).'},
+  {q:'Die Lieferung A → B ist bewegt (Saarlouis → Wien). Wo liegt der Ort der Lieferung B → C?', o:['Wien','Saarlouis','Köln','Kein Ort'], a:0, e:'B→C — после движущейся → место окончания перевозки (§ 3 Abs. 7 S. 2 Nr. 2).'}
+ ]},
+
+{id:'sol', t:'Ort der sonstigen Leistung', sub:'§§ 3a, 3b UStG', kz:'§ 3a', ordered:false,
+ theory:[
+  {h:'Услуги: свои правила', t:'Для услуг (sonstige Leistungen) место определяют по § 3a и § 3b. Порядок важен: сначала <b>спецправила</b>, потом <b>основные</b>.'},
+  {h:'Два основных правила', t:'<b>B2B</b> (клиент — предприниматель): место у <b>клиента</b>, § 3a Abs. 2.<br><b>B2C</b> (клиент — частное лицо): место у <b>исполнителя</b>, § 3a Abs. 1.'},
+  {h:'Спецправила — примеры', t:'Услуги по недвижимости — где участок (Abs. 3 Nr. 1). Короткая аренда машины — где её отдали (Abs. 3 Nr. 2). Ресторан — где кормят (Abs. 3 Nr. 3 b). Перевозка людей — по маршруту (§ 3b).'}
+ ],
+ steps:[
+  {k:'B2C-Grundregel', p:'§ 3a Abs. 1 UStG', d:'Leistung an Nichtunternehmer: Ort = Sitz des leistenden Unternehmers.', ru:'Клиент — частное лицо: место там, где сидит исполнитель.'},
+  {k:'B2B-Grundregel', p:'§ 3a Abs. 2 UStG', d:'Leistung an Unternehmer für dessen Unternehmen: Ort = Sitz des Empfängers.', ru:'Клиент — предприниматель: место там, где сидит клиент.'},
+  {k:'Grundstücksleistung', p:'§ 3a Abs. 3 Nr. 1 UStG', d:'Leistungen im Zusammenhang mit einem Grundstück: Ort = Lage des Grundstücks.', ru:'Услуга связана с участком или зданием: место там, где оно находится.'},
+  {k:'Kurzfristige Vermietung eines Beförderungsmittels', p:'§ 3a Abs. 3 Nr. 2 UStG', d:'Bis 30 Tage (Wasserfahrzeuge 90 Tage): Ort = Übergabe an den Empfänger.', ru:'Аренда транспорта до 30 дней: место там, где его передали.'},
+  {k:'Restaurationsleistung', p:'§ 3a Abs. 3 Nr. 3 Buchst. b UStG', d:'Speisen und Getränke zum Verzehr an Ort und Stelle: Ort = tatsächliche Erbringung.', ru:'Еда на месте: место там, где реально обслуживают.'},
+  {k:'Katalogleistung an Drittlandsempfänger', p:'§ 3a Abs. 4 UStG', d:'Z. B. Beratung an Nichtunternehmer mit Wohnsitz im Drittland: Ort = Wohnsitz des Empfängers.', ru:'Консультации и т. п. частному лицу из страны вне ЕС: место у клиента.'},
+  {k:'Elektronische Leistung an Privat (EU)', p:'§ 3a Abs. 5 UStG', d:'Telekommunikation, Rundfunk, elektronische Dienste B2C: Ort = Wohnsitz des Empfängers (Schwelle 10.000 €).', ru:'Электронные услуги частным лицам в ЕС: место у клиента (порог 10.000 €).'},
+  {k:'Personenbeförderung', p:'§ 3b Abs. 1 S. 1 UStG', d:'Ort = dort, wo die Beförderung bewirkt wird (Aufteilung nach Strecken).', ru:'Перевозка людей: облагается та часть пути, что прошла по стране.'}
+ ],
+ cases:[
+  {q:'Was prüfst du beim Ort der sonstigen Leistung zuerst?', o:['Ob eine Sonderregel greift','Die B2B-Grundregel','Die B2C-Grundregel','Den Steuersatz'], a:0, e:'Спецправила вытесняют основные: сначала § 3a Abs. 3–8, § 3b, § 3e, и только потом Abs. 1 или 2.'},
+  {q:'Steuerberater aus Saarlouis berät einen französischen Unternehmer für dessen Unternehmen. Ort?', o:['Frankreich','Saarlouis','Ort der Beratung','Nicht bestimmbar'], a:0, e:'B2B → § 3a Abs. 2: место у клиента во Франции. Там налог платит сам клиент (Reverse Charge).'},
+  {q:'Architekt aus Trier plant für einen Privatmann aus Trier ein Ferienhaus in Luxemburg. Ort?', o:['Luxemburg','Trier','Wohnsitz des Kunden','Sitz des Architekten'], a:0, e:'Проект дома связан с участком → § 3a Abs. 3 Nr. 1: место — Люксембург.'},
+  {q:'Privatkunde aus Metz mietet in Saarlouis für 5 Tage ein Auto. Ort der Leistung?', o:['Saarlouis','Metz','Sitz des Vermieters, falls abweichend','Wo das Auto gefahren wird'], a:0, e:'Краткосрочная аренда → § 3a Abs. 3 Nr. 2: место передачи — Саарлуи.'},
+  {q:'Steuerberater aus Saarlouis berät eine Privatperson mit Wohnsitz in Zürich. Ort?', o:['Schweiz – in DE nicht steuerbar','Saarlouis – in DE steuerbar','Ort der Beratung','Steuerfrei nach § 4 Nr. 1a'], a:0, e:'Консультация — Katalogleistung: § 3a Abs. 4 → место в Швейцарии, в Германии nicht steuerbar.'}
+ ]},
+
+{id:'bef', t:'Befreiungen & Option', sub:'§§ 4, 9 UStG', kz:'§ 4', ordered:false,
+ theory:[
+  {h:'Steuerbar, но steuerfrei', t:'Сделка может облагаться (steuerbar), но быть <b>освобождена</b> (steuerfrei). Освобождения перечислены в <b>§ 4 UStG</b> — длинный каталог с номерами.'},
+  {h:'Два вида освобождений', t:'<b>С вычетом Vorsteuer</b>: экспорт и поставки в ЕС (§ 4 Nr. 1) — чтобы товар уезжал без немецкого налога.<br><br><b>Без вычета</b>: аренда, медицина, образование, финансы — предприниматель теряет Vorsteuer.'},
+  {h:'Option — отказ от освобождения', t:'По § 9 иногда выгодно <b>отказаться</b> от освобождения, чтобы получить Vorsteuer. Можно только для некоторых номеров (8a–g, 9a, 12, 13, 19) и только если клиент — предприниматель.'}
+ ],
+ steps:[
+  {k:'Ausfuhrlieferung', p:'§ 4 Nr. 1 Buchst. a i.V.m. § 6 UStG', d:'Lieferung ins Drittland – steuerfrei mit Vorsteuerabzug.', ru:'Поставка в страну вне ЕС — освобождена, Vorsteuer сохраняется.'},
+  {k:'Innergemeinschaftliche Lieferung', p:'§ 4 Nr. 1 Buchst. b i.V.m. § 6a UStG', d:'Lieferung an einen Unternehmer in einem anderen EU-Staat mit gültiger USt-IdNr.', ru:'Поставка предпринимателю в другую страну ЕС с его налоговым номером ЕС.'},
+  {k:'Finanzumsätze', p:'§ 4 Nr. 8 UStG', d:'Z. B. Kreditgewährung, Umsätze mit Wertpapieren und Gesellschaftsanteilen.', ru:'Кредиты, ценные бумаги и другие финансовые операции.'},
+  {k:'Grundstücksverkauf', p:'§ 4 Nr. 9 Buchst. a UStG', d:'Umsätze, die unter das Grunderwerbsteuergesetz fallen.', ru:'Продажа недвижимости (там свой налог — Grunderwerbsteuer).'},
+  {k:'Vermietung von Grundstücken', p:'§ 4 Nr. 12 S. 1 Buchst. a UStG', d:'Langfristige Vermietung; nicht: kurzfristige Beherbergung, Stellplätze (S. 2).', ru:'Долгосрочная аренда недвижимости (не гостиница и не парковка).'},
+  {k:'Heilbehandlung', p:'§ 4 Nr. 14 UStG', d:'Heilbehandlungen im Bereich der Humanmedizin.', ru:'Лечение людей врачами и т. п.'},
+  {k:'Bildungsleistungen', p:'§ 4 Nr. 21 UStG', d:'Unterricht privater Schulen und Bildungseinrichtungen mit Bescheinigung der Landesbehörde.', ru:'Обучение в частных школах и учебных центрах с подтверждением от земли.'},
+  {k:'Option zur Steuerpflicht', p:'§ 9 Abs. 1 UStG', d:'Verzicht nur bei § 4 Nr. 8a–g, 9a, 12, 13, 19 und nur an Unternehmer für deren Unternehmen.', ru:'Отказ от освобождения — только для отдельных номеров и только B2B.'},
+  {k:'Einschränkung bei Vermietung', p:'§ 9 Abs. 2 UStG', d:'Option nur, wenn der Mieter ausschließlich Umsätze ausführt, die den Vorsteuerabzug nicht ausschließen.', ru:'Аренда: отказ возможен, только если у арендатора нет «вредных» освобождённых оборотов.'}
+ ],
+ cases:[
+  {q:'Vermieter V vermietet ein Büro an einen Steuerberater (nur steuerpflichtige Umsätze). Kann V zur Steuerpflicht optieren?', o:['Ja, § 9 Abs. 1 und 2 UStG erfüllt','Nein, Vermietung ist nicht optionsfähig','Nein, nur bei Verkauf','Nur mit Zustimmung des Finanzamts'], a:0, e:'§ 4 Nr. 12 входит в список § 9 Abs. 1, арендатор — предприниматель с облагаемыми оборотами → Option возможна.'},
+  {q:'Derselbe Vermieter vermietet eine Praxis an einen Zahnarzt. Option möglich?', o:['Nein – § 9 Abs. 2 UStG','Ja – § 9 Abs. 1 UStG','Ja, wenn der Arzt zustimmt','Nur für die Nebenkosten'], a:0, e:'У стоматолога освобождённые обороты (§ 4 Nr. 14), они исключают Vorsteuer → § 9 Abs. 2 запрещает Option.'},
+  {q:'Kann eine Ärztin auf die Befreiung ihrer Heilbehandlungen (§ 4 Nr. 14) verzichten?', o:['Nein, § 4 Nr. 14 steht nicht in § 9 Abs. 1','Ja, immer','Ja, gegenüber Unternehmern','Ja, als Kleinunternehmerin'], a:0, e:'§ 9 Abs. 1 перечисляет только Nr. 8a–g, 9a, 12, 13, 19. Номера 14 там нет.'},
+  {q:'Vermietung einer Wohnung an eine Privatperson. Option möglich?', o:['Nein – Empfänger ist kein Unternehmer','Ja – § 9 Abs. 1 UStG','Ja – wenn langfristig','Nur bei möblierten Wohnungen'], a:0, e:'Option возможна только при обороте в пользу предпринимателя для его бизнеса.'},
+  {q:'Ein Bildungsträger bietet Umschulungen an und hat die Bescheinigung der Landesbehörde. Wie sind die Kursgebühren zu behandeln?', o:['Steuerfrei nach § 4 Nr. 21 UStG','Steuerpflichtig mit 19 %','Steuerpflichtig mit 7 %','Nicht steuerbar'], a:0, e:'Обучение с подтверждением компетентного органа земли освобождено по § 4 Nr. 21 UStG.'}
+ ]},
+
+{id:'ku', t:'Kleinunternehmer', sub:'§ 19 UStG (ab 2025)', kz:'§ 19', ordered:true,
+ theory:[
+  {h:'Режим для маленьких', t:'При маленьком обороте предприниматель может не возиться с НДС: его обороты <b>steuerfrei</b>, USt в счетах он не пишет — но и <b>Vorsteuer не получает</b>. Режим для фирм с местом в Германии.'},
+  {h:'Две границы (с 2025 года)', t:'<b>Прошлый год</b>: Gesamtumsatz не больше <b>25.000 €</b>.<br><b>Текущий год</b>: не больше <b>100.000 €</b>.<br>Если 100.000 € превышены в течение года, с этого оборота сразу действует обычный режим.'},
+  {h:'Можно отказаться', t:'По § 19 Abs. 3 можно отказаться от режима (<b>Verzicht</b>), например чтобы получать Vorsteuer. Отказ связывает минимум на <b>5 лет</b>.'}
+ ],
+ steps:[
+  {k:'Gesamtumsatz ermitteln', p:'§ 19 Abs. 2 UStG', d:'Steuerbare Umsätze nach vereinnahmten Entgelten, abzüglich bestimmter steuerfreier Umsätze und Verkäufe von Anlagevermögen.', ru:'Считаем общий оборот по полученным деньгам, без некоторых освобождённых оборотов и продажи основных средств.'},
+  {k:'Vorjahr: höchstens 25.000 €', p:'§ 19 Abs. 1 S. 1 Nr. 1 UStG', d:'Gesamtumsatz im vorangegangenen Kalenderjahr nicht über 25.000 €.', ru:'В прошлом году оборот не больше 25.000 €.'},
+  {k:'Laufendes Jahr: höchstens 100.000 €', p:'§ 19 Abs. 1 S. 1 Nr. 2 UStG', d:'Gesamtumsatz im laufenden Jahr nicht über 100.000 €; ab Überschreiten Regelbesteuerung.', ru:'В текущем году не больше 100.000 €; сверх — сразу обычный режим.'},
+  {k:'Rechtsfolge: Umsätze steuerfrei', p:'§ 19 Abs. 1 S. 1 UStG', d:'Die Umsätze des inländischen Kleinunternehmers sind steuerfrei; kein Steuerausweis in der Rechnung.', ru:'Обороты освобождены, USt в счёте не указывается.'},
+  {k:'Kein Vorsteuerabzug', p:'§ 15 Abs. 2 S. 1 Nr. 1 UStG', d:'Die steuerfreien Umsätze nach § 19 schließen den Vorsteuerabzug aus.', ru:'Vorsteuer вычитать нельзя.'},
+  {k:'Verzicht', p:'§ 19 Abs. 3 UStG', d:'Erklärung gegenüber dem Finanzamt; bindet mindestens 5 Kalenderjahre.', ru:'Отказ от режима — минимум на 5 лет.'}
+ ],
+ cases:[
+  {q:'Grafikerin G: Umsatz 2025 = 22.000 €, 2026 voraussichtlich 40.000 €. Kleinunternehmerin 2026?', o:['Ja','Nein – Vorjahr über 25.000 €','Nein – über 100.000 €','Nur auf Antrag'], a:0, e:'Прошлый год ≤ 25.000 € и текущий ≤ 100.000 € → режим § 19 применяется.'},
+  {q:'Gesamtumsatz im Vorjahr 30.000 €. Kleinunternehmer im laufenden Jahr?', o:['Nein','Ja','Ja, bis 100.000 €','Nur im ersten Halbjahr'], a:0, e:'Граница прошлого года (25.000 €) превышена → в этом году обычный режим.'},
+  {q:'Vorjahr 20.000 €. Am 3. Oktober wird mit einem Auftrag die Grenze von 100.000 € überschritten. Folge?', o:['Ab diesem Umsatz Regelbesteuerung','Rückwirkend ab 1. Januar Regelbesteuerung','Erst ab nächstem Jahr Regelbesteuerung','Keine Folge'], a:0, e:'С 2025 года: начиная с оборота, которым превышены 100.000 €, — сразу обычный режим, без обратной силы.'},
+  {q:'Darf eine Kleinunternehmerin Vorsteuer aus dem Kauf eines Laptops abziehen?', o:['Nein','Ja','Ja, zur Hälfte','Ja, wenn über 800 €'], a:0, e:'Обороты освобождены → Vorsteuer исключена. Нужен вычет — нужен Verzicht (§ 19 Abs. 3) минимум на 5 лет.'},
+  {q:'Wie lange bindet der Verzicht auf die Kleinunternehmerregelung?', o:['Mindestens 5 Kalenderjahre','1 Jahr','3 Jahre','Für immer'], a:0, e:'§ 19 Abs. 3 UStG: минимум 5 календарных лет.'}
+ ]},
+
+{id:'ige', t:'Innergemeinschaftlicher Erwerb', sub:'§§ 1a, 3d UStG', kz:'§ 1a', ordered:true,
+ theory:[
+  {h:'Покупка из ЕС', t:'Немецкая фирма покупает товар во Франции. Француз продаёт <b>без налога</b> (у него освобождённая поставка в ЕС). Зато в Германии покупатель сам облагает покупку: это <b>innergemeinschaftlicher Erwerb</b>.'},
+  {h:'Зачем так', t:'Так налог всегда остаётся в стране назначения. Покупатель платит <b>Erwerbsteuer</b> и тут же вычитает её как Vorsteuer — обычно в итоге 0 €.'},
+  {h:'Порядок проверки', t:'Признаки § 1a → место § 3d (где закончилась перевозка) → steuerbar по § 1 Abs. 1 Nr. 5 → возникновение § 13 Abs. 1 Nr. 6 → платит покупатель → Vorsteuer § 15 Abs. 1 S. 1 Nr. 3.'}
+ ],
+ steps:[
+  {k:'Gegenstand gelangt aus einem anderen EU-Staat ins Inland', p:'§ 1a Abs. 1 Nr. 1 UStG', d:'Warenbewegung aus dem übrigen Gemeinschaftsgebiet in das Inland.', ru:'Товар везут из другой страны ЕС в Германию.'},
+  {k:'Erwerber ist Unternehmer für sein Unternehmen', p:'§ 1a Abs. 1 Nr. 2 UStG', d:'Oder eine juristische Person, die nicht Unternehmer ist oder nicht für ihr Unternehmen erwirbt.', ru:'Покупатель — предприниматель (для бизнеса) или юридическое лицо.'},
+  {k:'Lieferer ist Unternehmer, gegen Entgelt', p:'§ 1a Abs. 1 Nr. 3 UStG', d:'Lieferung durch einen Unternehmer gegen Entgelt im Rahmen seines Unternehmens; kein Kleinunternehmer im Ursprungsland.', ru:'Продавец — предприниматель, продаёт за деньги и не в режиме малого бизнеса.'},
+  {k:'Ort des Erwerbs', p:'§ 3d S. 1 UStG', d:'Wo sich der Gegenstand am Ende der Beförderung oder Versendung befindet.', ru:'Место покупки — там, где перевозка закончилась.'},
+  {k:'Steuerbarkeit des Erwerbs', p:'§ 1 Abs. 1 Nr. 5 UStG', d:'Der innergemeinschaftliche Erwerb im Inland gegen Entgelt ist steuerbar.', ru:'Такая покупка в Германии облагается.'},
+  {k:'Entstehung der Erwerbsteuer', p:'§ 13 Abs. 1 Nr. 6 UStG', d:'Mit Ausstellung der Rechnung, spätestens mit Ablauf des dem Erwerb folgenden Kalendermonats.', ru:'С датой счёта, но не позже конца следующего месяца.'},
+  {k:'Steuerschuldner: Erwerber', p:'§ 13a Abs. 1 Nr. 2 UStG', d:'Der Erwerber schuldet die Erwerbsteuer.', ru:'Налог платит покупатель.'},
+  {k:'Vorsteuerabzug der Erwerbsteuer', p:'§ 15 Abs. 1 S. 1 Nr. 3 UStG', d:'Die Erwerbsteuer ist als Vorsteuer abziehbar, wenn der Gegenstand für das Unternehmen erworben wird.', ru:'Erwerbsteuer тут же вычитается как Vorsteuer.'}
+ ],
+ cases:[
+  {q:'Eine GmbH aus Saarlouis kauft eine Maschine bei einem Hersteller in Lyon; Transport Lyon → Saarlouis. Was liegt in Deutschland vor?', o:['Innergemeinschaftlicher Erwerb, steuerbar nach § 1 Abs. 1 Nr. 5','Einfuhr nach § 1 Abs. 1 Nr. 4','Nicht steuerbarer Vorgang','Inländische Lieferung'], a:0, e:'Товар пришёл из ЕС, покупатель — предприниматель → ig. Erwerb (§ 1a), место — Саарлуи (§ 3d).'},
+  {q:'Wer schuldet im gleichen Fall die deutsche Erwerbsteuer?', o:['Die GmbH aus Saarlouis','Der Hersteller aus Lyon','Der Spediteur','Niemand'], a:0, e:'§ 13a Abs. 1 Nr. 2 UStG — Erwerbsteuer платит покупатель.'},
+  {q:'Erwerb am 15. Februar, Rechnung vom 20. März. Wann entsteht die Erwerbsteuer?', o:['Mit Ausstellung der Rechnung im März','Am 15. Februar','Ende April','Bei Bezahlung'], a:0, e:'§ 13 Abs. 1 Nr. 6: с выставлением счёта, но не позже конца следующего месяца (конец марта). Счёт 20 марта → март.'},
+  {q:'Kann die GmbH die Erwerbsteuer als Vorsteuer abziehen?', o:['Ja – § 15 Abs. 1 S. 1 Nr. 3','Nein, nie','Nur bei Zahlung','Nur als Kleinunternehmer'], a:0, e:'Erwerbsteuer вычитается как Vorsteuer, если покупка для облагаемого бизнеса. В итоге часто 0 €.'},
+  {q:'Wo liegt der Ort des innergemeinschaftlichen Erwerbs?', o:['Am Ende der Beförderung','Am Beginn der Beförderung','Am Sitz des Lieferers','Am Ort der Bestellung'], a:0, e:'§ 3d S. 1 UStG: там, где перевозка закончилась.'}
+ ]},
+
+{id:'vst', t:'Vorsteuerabzug', sub:'§ 15 UStG', kz:'§ 15', ordered:true,
+ theory:[
+  {h:'Вернуть свой НДС', t:'Предприниматель платит НДС поставщикам. Если покупка для облагаемого бизнеса, этот налог он <b>вычитает</b>: § 15 UStG, Vorsteuerabzug.'},
+  {h:'Схема в 8 шагов', t:'Unternehmer → Leistung eines anderen Unternehmers → für das Unternehmen → Rechnung → kein Abzugsverbot → kein Ausschluss (steuerfreie Umsätze) → Aufteilung → позже Berichtigung.'},
+  {h:'Ловушки', t:'Меньше <b>10 %</b> делового использования — вычета нет. Подарки дороже <b>50 €</b> — вычета нет. Покупки для освобождённых оборотов (врач, аренда жилья) — вычета нет, кроме экспорта.'}
+ ],
+ steps:[
+  {k:'Unternehmer', p:'§ 15 Abs. 1 S. 1 i.V.m. § 2 UStG', d:'Nur ein Unternehmer kann Vorsteuer abziehen.', ru:'Вычитать может только предприниматель.'},
+  {k:'Leistung eines anderen Unternehmers', p:'§ 15 Abs. 1 S. 1 Nr. 1 UStG', d:'Gesetzlich geschuldete Steuer für Lieferungen und sonstige Leistungen eines anderen Unternehmers.', ru:'Покупка у другого предпринимателя, который должен этот налог.'},
+  {k:'Für das Unternehmen', p:'§ 15 Abs. 1 S. 2 UStG', d:'Zuordnung zum Unternehmen; bei Gegenständen mindestens 10 % unternehmerische Nutzung.', ru:'Покупка для бизнеса; для вещей — минимум 10 % делового использования.'},
+  {k:'Ordnungsgemäße Rechnung', p:'§§ 14, 14a UStG', d:'Die Pflichtangaben nach § 14 Abs. 4 UStG müssen vorliegen.', ru:'Нужен правильный счёт со всеми реквизитами.'},
+  {k:'Kein Abzugsverbot', p:'§ 15 Abs. 1a UStG', d:'Kein Abzug für Aufwendungen, die nach § 4 Abs. 5 EStG nicht abziehbar sind (z. B. Geschenke über 50 €).', ru:'Нельзя вычесть налог по расходам, запрещённым в § 4 Abs. 5 EStG (подарки дороже 50 € и т. п.).'},
+  {k:'Kein Ausschluss wegen steuerfreier Umsätze', p:'§ 15 Abs. 2 S. 1 Nr. 1 UStG', d:'Ausschluss bei Verwendung für steuerfreie Umsätze; Rückausnahme in § 15 Abs. 3 UStG (z. B. Ausfuhr).', ru:'Нельзя вычесть, если покупка для освобождённых оборотов (кроме экспорта и ЕС).'},
+  {k:'Aufteilung bei gemischter Verwendung', p:'§ 15 Abs. 4 UStG', d:'Wirtschaftliche Zurechnung, z. B. nach Umsatz- oder Flächenschlüssel.', ru:'Смешанное использование — делим вычет по ключу.'},
+  {k:'Berichtigung', p:'§ 15a UStG', d:'Ändern sich später die Verhältnisse, wird der Vorsteuerabzug berichtigt.', ru:'Позже изменилось использование — вычет корректируется.'}
+ ],
+ cases:[
+  {q:'Ein Arzt mit ausschließlich steuerfreien Heilbehandlungen kauft einen Praxis-PC (mit USt). Vorsteuerabzug?', o:['Nein – § 15 Abs. 2 S. 1 Nr. 1 UStG','Ja – voll','Ja – zu 50 %','Ja – wegen § 15 Abs. 3'], a:0, e:'Компьютер служит только освобождённым оборотам, исключения нет → вычет запрещён.'},
+  {q:'Unternehmer U nutzt einen neu gekauften Pkw zu 8 % betrieblich. Vorsteuerabzug aus dem Kauf?', o:['Nein – unter 10 %','Ja – 8 % der Vorsteuer','Ja – volle Vorsteuer','Ja – nach § 15 Abs. 4 aufgeteilt'], a:0, e:'§ 15 Abs. 1 S. 2: меньше 10 % делового использования — вещь не считается купленной для бизнеса.'},
+  {q:'Exporteur E kauft Ware ein, die er steuerfrei in die USA ausführt. Vorsteuerabzug?', o:['Ja – Rückausnahme § 15 Abs. 3 Nr. 1 Buchst. a','Nein – steuerfreier Ausgangsumsatz','Nur zur Hälfte','Nur mit Ausfuhrnachweis des Käufers'], a:0, e:'Экспорт не исключает вычет — это Rückausnahme § 15 Abs. 3.'},
+  {q:'U schenkt einem Geschäftsfreund eine Uhr für 300 € netto. Vorsteuer aus dem Einkauf?', o:['Nein – § 15 Abs. 1a UStG','Ja – voll','Ja – bis 50 €','Ja – wenn Rechnung vorliegt'], a:0, e:'Подарки дороже 50 € не вычитаются по § 4 Abs. 5 S. 1 Nr. 1 EStG → и Vorsteuer нет (§ 15 Abs. 1a).'}
+ ]},
+
+{id:'wa', t:'Unentgeltliche Wertabgaben', sub:'§ 3 Abs. 1b, 9a; § 10 Abs. 4 UStG', kz:'§ 3 1b', ordered:false,
+ theory:[
+  {h:'Бесплатно — тоже налог', t:'Если предприниматель берёт что-то из бизнеса <b>себе</b> или <b>дарит</b>, налог всё равно возникает. Иначе можно было бы купить вещь с вычетом Vorsteuer и бесплатно пользоваться ей лично.'},
+  {h:'Товары и использование', t:'<b>§ 3 Abs. 1b</b> — товары: изъятие себе (Nr. 1), подарок сотруднику (Nr. 2), прочие подарки (Nr. 3).<br><br><b>§ 3 Abs. 9a</b> — использование: личные поездки на служебной машине (Nr. 1), работа сотрудников на личный дом (Nr. 2).'},
+  {h:'Ключевое условие', t:'Изъятие облагается, только если при покупке был <b>вычет Vorsteuer</b> (§ 3 Abs. 1b S. 2). Не было вычета — нет налога.'}
+ ],
+ steps:[
+  {k:'Entnahme eines Gegenstands', p:'§ 3 Abs. 1b S. 1 Nr. 1 UStG', d:'Entnahme für Zwecke außerhalb des Unternehmens – gleichgestellt einer Lieferung gegen Entgelt.', ru:'Предприниматель забирает товар из бизнеса себе.'},
+  {k:'Zuwendung an das Personal', p:'§ 3 Abs. 1b S. 1 Nr. 2 UStG', d:'Unentgeltliche Zuwendung eines Gegenstands an Arbeitnehmer für deren privaten Bedarf (außer Aufmerksamkeiten).', ru:'Бесплатный товар сотруднику для личных нужд.'},
+  {k:'Andere unentgeltliche Zuwendung', p:'§ 3 Abs. 1b S. 1 Nr. 3 UStG', d:'Z. B. Sachgeschenke; ausgenommen Geschenke von geringem Wert und Warenmuster.', ru:'Прочие подарки, кроме мелких (до 50 €) и образцов.'},
+  {k:'Vorsteuerabzug als Voraussetzung', p:'§ 3 Abs. 1b S. 2 UStG', d:'Nur steuerbar, wenn der Gegenstand oder seine Bestandteile zum Vorsteuerabzug berechtigt haben.', ru:'Облагается, только если при покупке был вычет Vorsteuer.'},
+  {k:'Private Nutzung eines Unternehmensgegenstands', p:'§ 3 Abs. 9a Nr. 1 UStG', d:'Z. B. private Pkw-Nutzung, wenn der Gegenstand zum Vorsteuerabzug berechtigt hat.', ru:'Личное использование вещи бизнеса, например служебной машины.'},
+  {k:'Andere unentgeltliche sonstige Leistung', p:'§ 3 Abs. 9a Nr. 2 UStG', d:'Z. B. Arbeitnehmer des Betriebs arbeiten im Privathaus des Unternehmers.', ru:'Прочие бесплатные услуги для личных целей.'},
+  {k:'Bemessungsgrundlage bei Entnahme', p:'§ 10 Abs. 4 S. 1 Nr. 1 UStG', d:'Einkaufspreis zzgl. Nebenkosten bzw. Selbstkosten – jeweils zum Zeitpunkt des Umsatzes.', ru:'База — цена закупки на момент изъятия.'},
+  {k:'Bemessungsgrundlage bei Nutzung', p:'§ 10 Abs. 4 S. 1 Nr. 2 UStG', d:'Die entstandenen Ausgaben, soweit sie zum Vorsteuerabzug berechtigt haben.', ru:'База — расходы, по которым был вычет.'}
+ ],
+ cases:[
+  {q:'Bäcker B nimmt jeden Abend Brötchen aus seinem Laden für seine Familie mit. Was liegt vor?', o:['Entnahme, § 3 Abs. 1b S. 1 Nr. 1','Sonstige Leistung, § 3 Abs. 9a Nr. 2','Nichts – zu geringer Wert','Zuwendung an Personal'], a:0, e:'Товар забирается для семьи → Entnahme, § 3 Abs. 1b S. 1 Nr. 1.'},
+  {q:'U kaufte einen Pkw von einem Privatmann (ohne Vorsteuer) und entnimmt ihn später ins Privatvermögen. Steuerbar?', o:['Nein – § 3 Abs. 1b S. 2 UStG','Ja – als Entnahme','Ja – als sonstige Leistung','Nur bei Verkauf'], a:0, e:'Машина куплена без Vorsteuer → изъятие не облагается.'},
+  {q:'Entnahme einer Ware: Einkauf damals 500 €, Wiederbeschaffungspreis heute 400 €. Bemessungsgrundlage?', o:['400 €','500 €','450 €','0 €'], a:0, e:'§ 10 Abs. 4 S. 1 Nr. 1: цена на момент изъятия = текущая цена закупки, 400 €.'},
+  {q:'U schenkt einem Kunden einen Kalender für 15 € netto. Wertabgabe nach § 3 Abs. 1b S. 1 Nr. 3?', o:['Nein – Geschenk von geringem Wert','Ja','Ja, aber steuerfrei','Nur bei Privatkunden'], a:0, e:'Мелкие подарки (до 50 € нетто) исключены из Nr. 3.'}
+ ]},
+
+{id:'ent', t:'Entstehung & Steuerschuldner', sub:'§§ 13, 13a, 13b, 14c UStG', kz:'§ 13', ordered:false,
+ theory:[
+  {h:'Когда возникает налог', t:'Общее правило — <b>Sollbesteuerung</b>: налог возникает в конце периода, в котором оказана услуга, даже если деньги ещё не пришли.'},
+  {h:'Исключения', t:'<b>Anzahlung</b> (предоплата) — налог в периоде, когда получены деньги.<br><b>Istbesteuerung</b> (по заявлению, при небольшом обороте) — налог только когда получены деньги.'},
+  {h:'Кто платит', t:'Обычно продавец (§ 13a). При <b>Reverse Charge</b> (§ 13b) платит покупатель — например, за услуги иностранных фирм и за строительные работы между строителями.'}
+ ],
+ steps:[
+  {k:'Sollbesteuerung', p:'§ 13 Abs. 1 Nr. 1 Buchst. a S. 1 UStG', d:'Steuer entsteht mit Ablauf des Voranmeldungszeitraums, in dem die Leistung ausgeführt wurde.', ru:'Налог в периоде, когда оказана услуга.'},
+  {k:'Anzahlungen', p:'§ 13 Abs. 1 Nr. 1 Buchst. a S. 4 UStG', d:'Steuer entsteht mit Ablauf des VAZ, in dem das Entgelt vereinnahmt wurde.', ru:'Предоплата — налог в периоде, когда получены деньги.'},
+  {k:'Istbesteuerung', p:'§ 13 Abs. 1 Nr. 1 Buchst. b, § 20 UStG', d:'Entstehung mit Ablauf des VAZ der Vereinnahmung (auf Antrag, z. B. Vorjahresumsatz bis 800.000 €).', ru:'По заявлению: налог в периоде, когда получены деньги.'},
+  {k:'Entstehung bei Wertabgaben', p:'§ 13 Abs. 1 Nr. 2 UStG', d:'Mit Ablauf des VAZ, in dem die unentgeltliche Wertabgabe ausgeführt wurde.', ru:'Изъятия — в периоде, когда они сделаны.'},
+  {k:'Regel-Steuerschuldner', p:'§ 13a Abs. 1 Nr. 1 UStG', d:'Der leistende Unternehmer schuldet die Steuer.', ru:'Обычно налог платит продавец.'},
+  {k:'Reverse Charge: EU-B2B-Leistung', p:'§ 13b Abs. 1 UStG', d:'Sonstige Leistung eines im EU-Ausland ansässigen Unternehmers nach § 3a Abs. 2 – der Empfänger schuldet.', ru:'Услуга фирмы из ЕС для немецкого бизнеса — платит получатель.'},
+  {k:'Reverse Charge: ausländischer Unternehmer', p:'§ 13b Abs. 2 Nr. 1 UStG', d:'Werklieferungen und übrige sonstige Leistungen eines im Ausland ansässigen Unternehmers.', ru:'Работы и услуги иностранной фирмы — платит получатель.'},
+  {k:'Reverse Charge: Bauleistungen', p:'§ 13b Abs. 2 Nr. 4 UStG', d:'Bauleistungen an einen Empfänger, der selbst nachhaltig Bauleistungen erbringt.', ru:'Строительные работы для строительной фирмы — платит получатель.'},
+  {k:'Unrichtiger Steuerausweis', p:'§ 14c Abs. 1 UStG', d:'Zu hoch ausgewiesene Steuer wird geschuldet, bis die Rechnung berichtigt ist.', ru:'Налог в счёте завышен — продавец должен его заплатить.'}
+ ],
+ cases:[
+  {q:'Leistung im März ausgeführt, bezahlt im Mai; Sollbesteuerung, monatliche Voranmeldung. Wann entsteht die Steuer?', o:['Mit Ablauf März','Mit Ablauf Mai','Bei Rechnungsstellung','Mit Ablauf des Jahres'], a:0, e:'Sollbesteuerung: важен момент оказания услуги (март), а не оплата.'},
+  {q:'Anzahlung im Januar für eine Leistung im April (Sollbesteuerung, monatlich). Steuer auf die Anzahlung entsteht …', o:['mit Ablauf Januar','mit Ablauf April','bei Schlussrechnung','gar nicht'], a:0, e:'§ 13 Abs. 1 Nr. 1 Buchst. a S. 4: для предоплаты налог в периоде получения денег.'},
+  {q:'Ein französischer Berater berät ein deutsches Unternehmen. Wer schuldet die deutsche Umsatzsteuer?', o:['Das deutsche Unternehmen','Der französische Berater','Niemand – nicht steuerbar','Beide gemeinsam'], a:0, e:'Место по § 3a Abs. 2 — Германия; платит получатель (§ 13b Abs. 1 i.V.m. Abs. 5).'},
+  {q:'Rechnung weist 19 % statt der geschuldeten 7 % aus. Folge?', o:['Der Leistende schuldet den Mehrbetrag, § 14c Abs. 1','Die Rechnung ist nichtig','Der Empfänger schuldet die Differenz','Keine Folge'], a:0, e:'Завышенный налог в счёте продавец должен заплатить, пока не исправит счёт.'}
+ ]}
+]},
+
+{id:'est', t:'Einkommensteuer', sub:'Подоходный налог — вторая работа', units:[
+{id:'est0', t:'ESt-Grundlagen', sub:'§§ 1, 2, 9 EStG', kz:'ESt', ordered:false,
+ theory:[
+  {h:'Что такое Einkommensteuer', t:'Подоходный налог для <b>физических лиц</b>. Облагается не вся выручка, а <b>доходы</b> (Einkünfte) по 7 видам — уже за вычетом расходов.'},
+  {h:'Кто платит', t:'<b>Unbeschränkt steuerpflichtig</b> (§ 1 Abs. 1): у кого в Германии <b>Wohnsitz</b> (§ 8 AO) или <b>gewöhnlicher Aufenthalt</b> — больше 6 месяцев (§ 9 AO). Тогда облагается весь доход в мире.<br><br><b>Beschränkt</b> (§ 1 Abs. 4): только немецкие доходы (§ 49).'},
+  {h:'Gewinn и Überschuss', t:'По 3 видам дохода считают <b>Gewinn</b> (прибыль бизнеса), по 4 — <b>Überschuss</b>: поступления минус Werbungskosten. Пример: зарплата минус расходы на дорогу и рабочие вещи.'}
+ ],
+ steps:[
+  {k:'Unbeschränkte Steuerpflicht', p:'§ 1 Abs. 1 EStG', d:'Natürliche Personen mit Wohnsitz oder gewöhnlichem Aufenthalt im Inland; Welteinkommensprinzip.', ru:'Живёт в Германии — облагается весь доход в мире.'},
+  {k:'Beschränkte Steuerpflicht', p:'§ 1 Abs. 4 i.V.m. § 49 EStG', d:'Weder Wohnsitz noch gewöhnlicher Aufenthalt im Inland; nur inländische Einkünfte.', ru:'Не живёт в Германии — облагаются только немецкие доходы.'},
+  {k:'Wohnsitz', p:'§ 8 AO', d:'Wohnung, die man unter Umständen innehat, die auf Beibehaltung und Benutzung schließen lassen.', ru:'Жильё, которое человек реально держит и использует.'},
+  {k:'Gewöhnlicher Aufenthalt', p:'§ 9 AO', d:'Nicht nur vorübergehender Aufenthalt; stets bei mehr als 6 Monaten.', ru:'Пребывание дольше 6 месяцев.'},
+  {k:'Gewinneinkünfte', p:'§ 2 Abs. 2 S. 1 Nr. 1 EStG', d:'Land- und Forstwirtschaft, Gewerbebetrieb, selbständige Arbeit: Einkünfte = Gewinn.', ru:'Для бизнеса доход = прибыль.'},
+  {k:'Überschusseinkünfte', p:'§ 2 Abs. 2 S. 1 Nr. 2 EStG', d:'Übrige Einkunftsarten: Überschuss der Einnahmen über die Werbungskosten.', ru:'Для остальных: поступления минус Werbungskosten.'},
+  {k:'Werbungskosten', p:'§ 9 Abs. 1 EStG', d:'Aufwendungen zur Erwerbung, Sicherung und Erhaltung der Einnahmen.', ru:'Расходы, чтобы получить доход: дорога на работу, рабочие вещи.'},
+  {k:'Arbeitnehmer-Pauschbetrag', p:'§ 9a S. 1 Nr. 1 Buchst. a EStG', d:'1.230 € Werbungskosten-Pauschbetrag bei nichtselbständiger Arbeit.', ru:'Без чеков из зарплаты вычитается 1.230 € расходов.'}
+ ],
+ cases:[
+  {q:'Anna zieht im Januar nach Saarlouis und mietet dort dauerhaft eine Wohnung. Steuerpflicht?', o:['Unbeschränkt – § 1 Abs. 1 EStG','Beschränkt – § 1 Abs. 4 EStG','Keine','Nur für deutsche Einkünfte'], a:0, e:'Есть Wohnsitz (§ 8 AO) в Германии → неограниченная обязанность, облагается доход по всему миру.'},
+  {q:'Ein Franzose wohnt in Metz und arbeitet in Saarbrücken; in Deutschland hat er keine Wohnung. Steuerpflicht in DE nach dem EStG?', o:['Beschränkt – nur inländische Einkünfte','Unbeschränkt','Keine','Unbeschränkt ab 6 Monaten Arbeit'], a:0, e:'Ни Wohnsitz, ни gewöhnlicher Aufenthalt в Германии → beschränkt (§ 1 Abs. 4). Для приграничных работников дополнительно действует DBA — это отдельная тема.'},
+  {q:'Arbeitnehmer A hat nachweisbare Werbungskosten von 600 €. Was wird abgezogen?', o:['1.230 € Pauschbetrag','600 €','0 €','1.830 €'], a:0, e:'Берётся большее: фактические 600 € или Pauschbetrag 1.230 € → 1.230 €.'},
+  {q:'Wie wird die Höhe der Einkünfte aus Gewerbebetrieb ermittelt?', o:['Als Gewinn','Als Überschuss der Einnahmen über die Werbungskosten','Als Umsatz','Pauschal'], a:0, e:'Gewerbebetrieb — Gewinneinkunftsart (§ 2 Abs. 2 S. 1 Nr. 1).'}
+ ]},
+
+{id:'eka', t:'Die 7 Einkunftsarten', sub:'§ 2 Abs. 1, §§ 13–22 EStG', kz:'§ 2 I', ordered:true,
+ theory:[
+  {h:'Только 7 видов', t:'Облагается только то, что попадает в один из 7 видов дохода (§ 2 Abs. 1). Выигрыш в лотерею ни в один не попадает → не облагается.'},
+  {h:'Запоминалка', t:'Первые три — бизнес (Gewinn): <b>Land/Forst, Gewerbe, selbständig</b>.<br>Остальные четыре — Überschuss: <b>Arbeit, Kapital, Vermietung, sonstige</b>.<br><br>Параграфы: <b>13, 15, 18</b> | <b>19, 20, 21, 22</b>.'}
+ ],
+ steps:[
+  {k:'Land- und Forstwirtschaft', p:'§ 13 EStG', d:'Z. B. Ackerbau, Viehzucht, Forstwirtschaft.', ru:'Сельское и лесное хозяйство.'},
+  {k:'Gewerbebetrieb', p:'§ 15 EStG', d:'Selbständige, nachhaltige Betätigung mit Gewinnerzielungsabsicht und Teilnahme am allgemeinen wirtschaftlichen Verkehr.', ru:'Торговля, ремесло, производство — обычный бизнес.'},
+  {k:'Selbständige Arbeit', p:'§ 18 EStG', d:'Freiberufler, z. B. Ärzte, Steuerberater, Rechtsanwälte, Künstler.', ru:'Свободные профессии: врачи, юристы, налоговые консультанты.'},
+  {k:'Nichtselbständige Arbeit', p:'§ 19 EStG', d:'Arbeitslohn aus einem Dienstverhältnis.', ru:'Зарплата по трудовому договору.'},
+  {k:'Kapitalvermögen', p:'§ 20 EStG', d:'Zinsen, Dividenden, Veräußerungsgewinne; Sparer-Pauschbetrag 1.000 € (Abs. 9).', ru:'Проценты, дивиденды, доход от акций.'},
+  {k:'Vermietung und Verpachtung', p:'§ 21 EStG', d:'Einkünfte aus der Vermietung von Grundstücken, Gebäuden, Wohnungen.', ru:'Сдача квартир, домов, участков.'},
+  {k:'Sonstige Einkünfte', p:'§ 22 EStG', d:'Abschließend aufgezählt, z. B. Renten, private Veräußerungsgeschäfte (§ 23).', ru:'Закрытый список: пенсии, спекулятивные сделки и др.'}
+ ],
+ cases:[
+  {q:'Max arbeitet angestellt im Schichtdienst und erhält Lohn. Einkunftsart?', o:['§ 19 – nichtselbständige Arbeit','§ 15 – Gewerbebetrieb','§ 18 – selbständige Arbeit','§ 22 – sonstige Einkünfte'], a:0, e:'Зарплата по трудовому договору — § 19 EStG.'},
+  {q:'Eine Steuerberaterin führt ihre eigene Kanzlei. Einkunftsart?', o:['§ 18 – selbständige Arbeit','§ 15 – Gewerbebetrieb','§ 19 – nichtselbständige Arbeit','§ 21 – Vermietung'], a:0, e:'Steuerberater — свободная профессия из каталога § 18 Abs. 1 Nr. 1.'},
+  {q:'Herr B vermietet eine Eigentumswohnung in Dillingen. Einkunftsart?', o:['§ 21 – Vermietung und Verpachtung','§ 20 – Kapitalvermögen','§ 15 – Gewerbebetrieb','Nicht steuerbar'], a:0, e:'Сдача квартиры — § 21 Abs. 1 Nr. 1 EStG.'},
+  {q:'Frau C gewinnt 50.000 € im Lotto. Einkunftsart?', o:['Keine – nicht steuerbar','§ 22 – sonstige Einkünfte','§ 20 – Kapitalvermögen','§ 15 – Gewerbebetrieb'], a:0, e:'Выигрыш не попадает ни в один из 7 видов → не облагается.'},
+  {q:'Wie hoch ist der Sparer-Pauschbetrag für Ledige?', o:['1.000 €','801 €','1.230 €','2.000 €'], a:0, e:'§ 20 Abs. 9 EStG: 1.000 € (для супругов при совместной оценке — 2.000 €).'}
+ ]},
+
+{id:'ezve', t:'Schema zvE', sub:'§ 2 EStG, R 2 EStR', kz:'§ 2', ordered:true,
+ theory:[
+  {h:'От доходов к налогу', t:'Из суммы доходов шаг за шагом вычитают льготы и расходы. У каждого промежуточного итога своё имя — их спрашивают на экзамене.'},
+  {h:'Лестница', t:'Summe der Einkünfte → <b>Gesamtbetrag der Einkünfte</b> → <b>Einkommen</b> → <b>zu versteuerndes Einkommen</b> → tarifliche Einkommensteuer.'},
+  {h:'Что вычитают', t:'До GdE: Altersentlastungsbetrag, Entlastungsbetrag для одиноких родителей.<br>До Einkommen: убытки (Verlustabzug), Sonderausgaben (страховки, пенсионные взносы), außergewöhnliche Belastungen (болезнь, уход).<br>До zvE: Freibeträge für Kinder — если выгоднее Kindergeld.'}
+ ],
+ steps:[
+  {k:'Summe der Einkünfte', p:'§ 2 Abs. 1, 2 EStG', d:'Einkünfte aus den sieben Einkunftsarten einschließlich Verlustausgleich.', ru:'Сумма доходов по всем 7 видам.'},
+  {k:'− Altersentlastungsbetrag', p:'§ 24a EStG', d:'Für Steuerpflichtige, die vor Beginn des Kalenderjahres das 64. Lebensjahr vollendet haben.', ru:'Льгота для старших (от 64 лет).'},
+  {k:'− Entlastungsbetrag für Alleinerziehende', p:'§ 24b EStG', d:'Für Alleinstehende mit mindestens einem Kind im Haushalt.', ru:'Льгота для одиноких родителей.'},
+  {k:'= Gesamtbetrag der Einkünfte', p:'§ 2 Abs. 3 EStG', d:'Zwischensumme; Bezugsgröße z. B. für Spenden- und Belastungsgrenzen.', ru:'Промежуточный итог — «общая сумма доходов».'},
+  {k:'− Verlustabzug', p:'§ 10d EStG', d:'Verlustrücktrag und Verlustvortrag aus anderen Jahren.', ru:'Убытки других лет.'},
+  {k:'− Sonderausgaben', p:'§§ 10–10c EStG', d:'Z. B. Vorsorgeaufwendungen, Kirchensteuer, Spenden.', ru:'Страховки, пенсионные взносы, пожертвования и др.'},
+  {k:'− Außergewöhnliche Belastungen', p:'§§ 33–33b EStG', d:'Zwangsläufige größere Aufwendungen, z. B. Krankheitskosten über der zumutbaren Belastung.', ru:'Вынужденные крупные расходы: лечение, уход.'},
+  {k:'= Einkommen', p:'§ 2 Abs. 4 EStG', d:'Gesamtbetrag der Einkünfte abzüglich Sonderausgaben und außergewöhnlicher Belastungen.', ru:'«Доход» в смысле закона.'},
+  {k:'− Freibeträge für Kinder', p:'§ 32 Abs. 6 EStG', d:'Kinderfreibetrag und BEA-Freibetrag, wenn günstiger als das Kindergeld (§ 31).', ru:'Детские вычеты — если они выгоднее Kindergeld.'},
+  {k:'= zu versteuerndes Einkommen', p:'§ 2 Abs. 5 EStG', d:'Bemessungsgrundlage für die tarifliche Einkommensteuer.', ru:'База для расчёта налога.'},
+  {k:'Tarifliche Einkommensteuer', p:'§ 32a EStG', d:'Anwendung des Tarifs; bei Zusammenveranlagung Splittingverfahren (§ 32a Abs. 5).', ru:'Налог по тарифной шкале.'}
+ ],
+ cases:[
+  {q:'Was ergibt Gesamtbetrag der Einkünfte − Sonderausgaben − außergewöhnliche Belastungen?', o:['Einkommen','Zu versteuerndes Einkommen','Summe der Einkünfte','Tarifliche ESt'], a:0, e:'§ 2 Abs. 4 EStG — это Einkommen.'},
+  {q:'Wovon werden die Sonderausgaben abgezogen?', o:['Vom Gesamtbetrag der Einkünfte','Von der Summe der Einkünfte','Vom zu versteuernden Einkommen','Von der tariflichen ESt'], a:0, e:'Sonderausgaben вычитают после GdE, и получается Einkommen.'},
+  {q:'Summe der Einkünfte 50.000 €, Entlastungsbetrag für Alleinerziehende 4.260 €, Sonderausgaben 6.000 €. Einkommen?', o:['39.740 €','45.740 €','44.000 €','50.000 €'], a:0, e:'50.000 − 4.260 = 45.740 € (GdE); − 6.000 = 39.740 € Einkommen.'},
+  {q:'Wann werden die Freibeträge für Kinder abgezogen?', o:['Wenn sie günstiger sind als das Kindergeld','Immer','Nie, es gibt nur Kindergeld','Nur bei Alleinerziehenden'], a:0, e:'Günstigerprüfung (§ 31 EStG): налоговая сама сравнивает и выбирает выгодный вариант.'},
+  {q:'Was ist die Bemessungsgrundlage für die tarifliche Einkommensteuer?', o:['Zu versteuerndes Einkommen','Einkommen','Gesamtbetrag der Einkünfte','Summe der Einkünfte'], a:0, e:'§ 2 Abs. 5 S. 1 EStG.'}
+ ]}
+]},
+
+{id:'kst', t:'Körperschaftsteuer', sub:'Налог на прибыль GmbH и AG', units:[
+{id:'kst0', t:'KSt-Grundlagen', sub:'§§ 1, 8, 10, 23 KStG', kz:'KSt', ordered:false,
+ theory:[
+  {h:'Налог для компаний', t:'GmbH и AG платят не Einkommensteuer, а <b>Körperschaftsteuer</b>: 15 % от прибыли (§ 23 KStG) плюс Solidaritätszuschlag 5,5 % от суммы налога. Отдельно ещё Gewerbesteuer.'},
+  {h:'Кто платит', t:'<b>Unbeschränkt</b> (§ 1 KStG) — корпорации с <b>Sitz</b> (§ 11 AO) или <b>Geschäftsleitung</b> (§ 10 AO) в Германии. Все их доходы считаются доходами от Gewerbebetrieb (§ 8 Abs. 2).'},
+  {h:'Компания и владелец', t:'Любимые темы экзамена: <b>vGA</b> — скрытая выплата прибыли владельцу (например, завышенная зарплата директору-владельцу) и <b>verdeckte Einlage</b> — скрытый вклад владельца. Их исправляют вне баланса.'}
+ ],
+ steps:[
+  {k:'Unbeschränkte KSt-Pflicht', p:'§ 1 Abs. 1 KStG', d:'Kapitalgesellschaften u. a. mit Geschäftsleitung oder Sitz im Inland.', ru:'GmbH/AG с местом руководства или регистрации в Германии.'},
+  {k:'Geschäftsleitung', p:'§ 10 AO', d:'Mittelpunkt der geschäftlichen Oberleitung.', ru:'Где реально принимаются управленческие решения.'},
+  {k:'Sitz', p:'§ 11 AO', d:'Ort, der durch Gesetz, Gesellschaftsvertrag oder Satzung bestimmt ist.', ru:'Юридический адрес по уставу.'},
+  {k:'Alle Einkünfte gewerblich', p:'§ 8 Abs. 2 KStG', d:'Bei unbeschränkt steuerpflichtigen Kapitalgesellschaften sind alle Einkünfte solche aus Gewerbebetrieb.', ru:'У GmbH любой доход — от Gewerbebetrieb.'},
+  {k:'Steuersatz', p:'§ 23 Abs. 1 KStG', d:'15 % des zu versteuernden Einkommens; zzgl. 5,5 % Solidaritätszuschlag.', ru:'15 % плюс Soli 5,5 % от налога.'},
+  {k:'Verdeckte Gewinnausschüttung', p:'§ 8 Abs. 3 S. 2 KStG', d:'Durch das Gesellschaftsverhältnis veranlasste Vermögensminderung; mindert das Einkommen nicht.', ru:'Скрытая выплата владельцу — не уменьшает прибыль.'},
+  {k:'Verdeckte Einlage', p:'§ 8 Abs. 3 S. 3 KStG', d:'Gesellschafter wendet der Gesellschaft einen einlagefähigen Vorteil zu; erhöht das Einkommen nicht.', ru:'Скрытый вклад владельца — не увеличивает прибыль.'},
+  {k:'Nichtabziehbare Aufwendungen', p:'§ 10 KStG', d:'Z. B. KSt selbst (Nr. 2), Hälfte der Aufsichtsratsvergütungen (Nr. 4).', ru:'Расходы, которые не уменьшают прибыль: сам KSt и др.'}
+ ],
+ cases:[
+  {q:'Die X-GmbH hat Sitz und Geschäftsleitung in Saarlouis. Steuerpflicht?', o:['Unbeschränkt KSt-pflichtig – § 1 Abs. 1 KStG','Einkommensteuerpflichtig','Beschränkt KSt-pflichtig','Nicht steuerpflichtig'], a:0, e:'Корпорация с Sitz и Geschäftsleitung в Германии → неограниченная обязанность.'},
+  {q:'Gesellschafter-Geschäftsführer erhält 300.000 € Gehalt; angemessen wären 200.000 €. Folge?', o:['vGA von 100.000 €, Einkommen wird erhöht','Keine Folge','vGA von 300.000 €','Verdeckte Einlage von 100.000 €'], a:0, e:'Излишек 100.000 € вызван участием в обществе → vGA, прибавляется вне баланса (§ 8 Abs. 3 S. 2).'},
+  {q:'Zu versteuerndes Einkommen 100.000 €. Körperschaftsteuer?', o:['15.000 €','25.000 €','30.000 €','5.500 €'], a:0, e:'15 % (§ 23 Abs. 1 KStG) = 15.000 €; плюс Soli 5,5 % = 825 €.'},
+  {q:'Ein Gesellschafter verkauft der GmbH ein Grundstück (Wert 500.000 €) für 300.000 €. Was liegt vor?', o:['Verdeckte Einlage von 200.000 €','vGA von 200.000 €','Keine Folge','Steuerfreie Einnahme'], a:0, e:'Владелец передаёт обществу выгоду → verdeckte Einlage, доход не увеличивает (§ 8 Abs. 3 S. 3).'},
+  {q:'Ist die Körperschaftsteuer selbst als Betriebsausgabe abziehbar?', o:['Nein – § 10 Nr. 2 KStG','Ja','Nur zur Hälfte','Nur der Solidaritätszuschlag'], a:0, e:'§ 10 Nr. 2 KStG: налоги на доход не вычитаются.'}
+ ]},
+
+{id:'kste', t:'Schema Einkommen GmbH', sub:'R 7.1 KStR', kz:'R 7.1', ordered:true,
+ theory:[
+  {h:'Откуда начинаем', t:'Старт — <b>прибыль по налоговому балансу</b>. Дальше её исправляют «вне баланса» (außerbilanziell): прибавляют то, что уменьшило прибыль незаконно, и вычитают освобождённые доходы.'},
+  {h:'Ключевые поправки', t:'<b>+ vGA</b>, <b>− verdeckte Einlagen</b>, <b>+ nichtabziehbare Aufwendungen</b> (KSt, Gewerbesteuer, половина вознаграждения наблюдательного совета), <b>− § 8b</b> (дивиденды от других корпораций и продажа их долей — фактически освобождено 95 %).'},
+  {h:'Финиш', t:'Пожертвования сначала прибавляют все, потом вычитают в пределах лимита. Затем убытки (§ 10d) → <b>zu versteuerndes Einkommen</b> × 15 %.'}
+ ],
+ steps:[
+  {k:'Steuerbilanzgewinn', p:'§ 8 Abs. 1 KStG i.V.m. §§ 4, 5 EStG', d:'Ausgangspunkt: Gewinn laut Steuerbilanz.', ru:'Старт — прибыль по налоговому балансу.'},
+  {k:'+ verdeckte Gewinnausschüttungen', p:'§ 8 Abs. 3 S. 2 KStG', d:'Hinzurechnung, soweit die vGA den Gewinn gemindert hat.', ru:'Прибавляем скрытые выплаты владельцу.'},
+  {k:'− verdeckte Einlagen', p:'§ 8 Abs. 3 S. 3 KStG', d:'Kürzung, soweit die Einlage den Gewinn erhöht hat.', ru:'Вычитаем скрытые вклады владельца.'},
+  {k:'+ nichtabziehbare Aufwendungen', p:'§ 10 KStG, § 4 Abs. 5, 5b EStG', d:'Z. B. KSt, Solidaritätszuschlag, Gewerbesteuer, Hälfte der Aufsichtsratsvergütung, Geschenke über 50 €.', ru:'Прибавляем то, что нельзя было списать в расходы.'},
+  {k:'+ sämtliche Spenden', p:'§ 9 Abs. 2 S. 1 KStG', d:'Zunächst werden alle als Aufwand gebuchten Zuwendungen hinzugerechnet.', ru:'Сначала прибавляем все пожертвования.'},
+  {k:'− steuerfreie Beteiligungserträge', p:'§ 8b Abs. 1–3, 5 KStG', d:'Dividenden und Veräußerungsgewinne aus Anteilen bleiben außer Ansatz; 5 % gelten als nichtabziehbare Betriebsausgaben.', ru:'Дивиденды и продажа долей других корпораций — освобождено 95 %.'},
+  {k:'= Summe der Einkünfte', p:'R 7.1 Abs. 1 KStR', d:'Zwischensumme nach den außerbilanziellen Korrekturen.', ru:'Промежуточный итог.'},
+  {k:'− abziehbare Spenden', p:'§ 9 Abs. 1 Nr. 2 KStG', d:'Abzug bis 20 % des Einkommens oder 4 ‰ der Umsätze und Löhne.', ru:'Вычитаем пожертвования в пределах лимита.'},
+  {k:'− Verlustabzug', p:'§ 10d EStG i.V.m. § 8 Abs. 1 KStG', d:'Verlustrücktrag und -vortrag; Grenzen des § 8c KStG beachten.', ru:'Вычитаем убытки других лет.'},
+  {k:'= zu versteuerndes Einkommen', p:'§ 7 Abs. 1, 2 KStG', d:'Bemessungsgrundlage der Körperschaftsteuer.', ru:'База для налога.'},
+  {k:'× 15 % Körperschaftsteuer', p:'§ 23 Abs. 1 KStG', d:'Tarifliche Körperschaftsteuer; zzgl. 5,5 % Solidaritätszuschlag.', ru:'Налог 15 % плюс Soli.'}
+ ],
+ cases:[
+  {q:'Jahresüberschuss 80.000 €; als Aufwand gebucht sind KSt-Vorauszahlungen 12.000 € und eine vGA von 8.000 €. Einkommen ohne weitere Korrekturen?', o:['100.000 €','80.000 €','88.000 €','60.000 €'], a:0, e:'80.000 + 12.000 (§ 10 Nr. 2) + 8.000 (vGA) = 100.000 €.'},
+  {q:'Die GmbH erhält 20.000 € Dividende aus einer 30 %-Beteiligung an einer anderen GmbH. Auswirkung auf das Einkommen?', o:['+1.000 € (5 % nichtabziehbare BA)','+20.000 €','0 €','−20.000 €'], a:0, e:'§ 8b Abs. 1: дивиденды вне налога, но 5 % = 1.000 € считаются невычитаемыми расходами (§ 8b Abs. 5).'},
+  {q:'Was ist der Ausgangspunkt der Einkommensermittlung einer GmbH?', o:['Gewinn laut Steuerbilanz','Umsatz','Summe der Einkünfte','Gesamtbetrag der Einkünfte'], a:0, e:'Старт — прибыль по Steuerbilanz (§ 8 Abs. 1 KStG i.V.m. §§ 4, 5 EStG).'},
+  {q:'Ist die Gewerbesteuer bei der GmbH als Betriebsausgabe abziehbar?', o:['Nein – § 4 Abs. 5b EStG','Ja','Zur Hälfte','Nur bei Verlusten'], a:0, e:'§ 4 Abs. 5b EStG: Gewerbesteuer — невычитаемый расход, её прибавляют обратно.'},
+  {q:'Dividende aus einer 5 %-Beteiligung (Streubesitz). Gilt § 8b Abs. 1?', o:['Nein – § 8b Abs. 4 KStG','Ja, zu 95 % steuerfrei','Ja, voll steuerfrei','Nur bei Reinvestition'], a:0, e:'§ 8b Abs. 4: при доле меньше 10 % на начало года дивиденды облагаются полностью.'}
+ ]}
+]}
+];
+
+/* ============ STATE ============ */
+const ALLU=[];COURSES.forEach(c=>c.units.forEach((u,i)=>{u.course=c;u.idx=i;ALLU.push(u)}));
+const KEY='ustSchemaDrill.v2', GOAL=50, INT=[0,1,3,7,14,30], MAXL=5;
+const LEVELS=['Знакомство I','Знакомство II','Нормы','Схема целиком','Экзамен'];
+function today(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)}
+function blank(){return {xp:0,streak:0,lastDay:null,dayXp:0,xpDay:null,units:{},items:{}}}
+function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r))}catch(e){}return blank()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load(), tab='path', L=null;
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const unitById=id=>ALLU.find(u=>u.id===id);
+const done=u=>(S.units[u.id]||0);
+const unlocked=u=>u.idx===0||done(u.course.units[u.idx-1])>=2;
+const todayXp=()=>S.xpDay===today()?S.dayXp:0;
+const streakNow=()=>(S.lastDay!==null&&today()-S.lastDay<=1)?S.streak:0;
+const itemBox=id=>(S.items[id]?S.items[id].box:-1);
+
+function grade(id,ok){
+  if(!id)return;
+  const it=S.items[id]||{box:0,due:0,seen:0,wrong:0};
+  it.seen++;
+  if(ok){it.box=Math.min(5,it.box+1);it.due=today()+INT[it.box]}
+  else{it.box=0;it.due=today();it.wrong++}
+  S.items[id]=it;
+}
+function dueIds(){const t=today();return Object.keys(S.items).filter(id=>unitById(id.split(':')[0])&&S.items[id].due<=t)}
+
+/* ============ EXERCISES ============ */
+function opts(correct,pool,n=4){const others=shuffle([...new Set(pool)].filter(x=>x!==correct)).slice(0,n-1);return shuffle([correct,...others])}
+const ALLP=ALLU.filter(u=>u.id!=='zit').flatMap(u=>u.steps.map(s=>s.p));
+function stepCard(s){return `<b>${esc(s.k)}</b> · <span class="p">${esc(s.p)}</span><br>${esc(s.ru)}`}
+
+function exStep(u,i,ty){
+  const s=u.steps[i], id=`${u.id}:s${i}`;
+  const names=u.steps.map(x=>x.k), paras=u.steps.map(x=>x.p);
+  const pool=paras.length>=4||u.id==='zit'?paras:paras.concat(ALLP);
+  const ex=stepCard(s);
+  switch(ty){
+    case 'ru2de': return {id,kind:'choice',label:'Как это по-немецки?',q:s.ru,hint:u.t,opts:opts(s.k,names,3),ans:s.k,expl:ex};
+    case 'tf':{
+      const right=Math.random()<.5, shown=right?s.p:pick([...new Set(pool)].filter(x=>x!==s.p));
+      return {id,kind:'choice',label:'Верно или нет?',q:`${s.k}  →  ${shown}`,hint:'Норма указана правильно?',opts:['Верно','Неверно'],ans:right?'Верно':'Неверно',tf:true,expl:ex};}
+    case 'para': return {id,kind:'choice',label:u.plabel||'Найди норму',q:s.k,hint:s.ru,opts:opts(s.p,pool),ans:s.p,mono:true,expl:ex};
+    case 'name': return {id,kind:'choice',label:'Что это за пункт?',q:s.d,hint:u.t,opts:opts(s.k,names),ans:s.k,expl:ex+`<br><i>${esc(s.d)}</i>`};
+    case 'prev':{const pv=u.steps[i-1];return {id,kind:'choice',label:'Что идёт дальше?',q:`После «${pv.k}» проверяем …`,hint:u.t+' · '+u.sub,opts:opts(s.k,names.filter(x=>x!==pv.k)),ans:s.k,expl:`${esc(pv.k)} →<br>${ex}`}}
+    default: return {id,kind:'gap',label:'Заполни пропуск в схеме',q:u.t,hint:u.sub,unit:u,gap:i,opts:opts(s.k,names),ans:s.k,expl:ex};
+  }
+}
+function exOrder(u){
+  let st=u.steps,off=0; if(st.length>6){off=Math.floor(Math.random()*(st.length-5));st=st.slice(off,off+6)}
+  return {id:u.id+':order',kind:'order',label:'Расставь по порядку',q:u.t,hint:u.sub+(st.length<u.steps.length?` · шаги ${off+1}–${off+st.length}`:''),ans:st.map(s=>s.k),toks:shuffle(st.map(s=>s.k)),expl:st.map((s,i)=>`${off+i+1}. ${esc(s.k)}`).join('<br>')};
+}
+function exCase(u,j){const c=u.cases[j];return {id:`${u.id}:c${j}`,kind:'choice',label:'Fall',q:c.q,hint:u.t,opts:shuffle(c.o),ans:c.o[c.a],expl:esc(c.e)}}
+function exMatch(u,idx,mode){
+  const sel=shuffle(idx).slice(0,4);
+  const L=sel.map(i=>u.steps[i].k), R=sel.map(i=>mode==='p'?u.steps[i].p:u.steps[i].ru);
+  return {id:null,kind:'match',label:mode==='p'?'Соедини пункт и норму':'Соедини термин и смысл',q:u.t,hint:'Нажми слева, потом справа',left:shuffle(sel.map((_,k)=>k)),right:shuffle(sel.map((_,k)=>k)),L,R,mono:mode==='p'};
+}
+function exFromId(id){
+  const [uid,k]=id.split(':'), u=unitById(uid);
+  if(k==='order')return exOrder(u);
+  if(k[0]==='c')return exCase(u,+k.slice(1));
+  const i=+k.slice(1), types=['para','name','tf'];
+  if(u.ordered){types.push('gap');if(i>0)types.push('prev')}
+  return exStep(u,i,pick(types));
+}
+
+const weak=ids=>shuffle(ids).sort((a,b)=>itemBox(a)-itemBox(b));
+const range=(a,b)=>Array.from({length:b-a},(_,i)=>a+i);
+function teachBlock(u,a,b){
+  const out=[];
+  range(a,b).forEach((i,n)=>{out.push({kind:'teach',unit:u,i});out.push(exStep(u,i,n%2?'tf':'ru2de'))});
+  const idx=range(a,b); if(idx.length>=3)out.push(exMatch(u,idx,'ru'));
+  return out;
+}
+function buildUnitLesson(u){
+  const lv=done(u), n=u.steps.length, half=Math.min(6,Math.ceil(n/2));
+  const sids=u.steps.map((_,i)=>`${u.id}:s${i}`), cids=u.cases.map((_,j)=>`${u.id}:c${j}`);
+  if(lv===0) return [...u.theory.map((t,k)=>({kind:'theory',unit:u,k})),...teachBlock(u,0,half)];
+  if(lv===1){const ex=[{kind:'theory',unit:u,k:u.theory.length-1,recap:true},...teachBlock(u,half,n)];
+    ex.push(exStep(u,Math.floor(Math.random()*n),'tf'));return ex}
+  if(lv===2){
+    const ex=weak(sids).slice(0,5).map(id=>exStep(u,+id.split(':s')[1],'para'));
+    if(u.ordered)weak(sids.slice(1)).slice(0,2).forEach(id=>{const i=+id.split(':s')[1];ex.push(exStep(u,i,pick(['gap','prev'])))});
+    else weak(sids).slice(0,2).forEach(id=>ex.push(exStep(u,+id.split(':s')[1],'name')));
+    ex.push(exCase(u,+weak(cids)[0].split(':c')[1]));
+    return shuffle(ex);
+  }
+  const ex=[];
+  if(lv===3){
+    weak(cids).slice(0,2).forEach(id=>ex.push(exFromId(id)));
+    weak(sids).slice(0,4).forEach(id=>ex.push(exFromId(id)));
+    const out=shuffle(ex); out.splice(2,0,exMatch(u,range(0,n),'p'));
+    if(u.ordered)out.push(exOrder(u)); else out.push(exMatch(u,range(0,n),'p'));
+    return out;
+  }
+  weak(cids).slice(0,3).forEach(id=>ex.push(exFromId(id)));
+  weak(sids).slice(0,u.ordered?4:5).forEach(id=>ex.push(exFromId(id)));
+  if(u.ordered)ex.push(exOrder(u));
+  return shuffle(ex);
+}
+function buildReview(){return weak(dueIds()).slice(0,10).map(exFromId)}
+function caseUnits(){return ALLU.filter(u=>done(u)>=3)}
+function buildCaseMix(){return shuffle(caseUnits().flatMap(u=>u.cases.map((_,j)=>`${u.id}:c${j}`))).slice(0,8).map(exFromId)}
+
+/* ============ HOME ============ */
+const ICON={
+  path:'<svg viewBox="0 0 24 24"><path d="M5 4h4v4H5zM15 10h4v4h-4zM5 16h4v4H5zM9 6h3a2 2 0 0 1 2 2v2M15 14v2a2 2 0 0 1-2 2H9"/></svg>',
+  review:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/><path d="M12 8v4l3 2"/></svg>',
+  schema:'<svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/></svg>',
+  x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+const app=document.getElementById('app');
+function plural(n,a,b,c){const m=n%10,h=n%100;if(m===1&&h!==11)return a;if(m>=2&&m<=4&&(h<12||h>14))return b;return c}
+
+function header(){
+  const tx=todayXp();
+  return `<header class="top"><div class="brand"><h1>Schema-Drill</h1><p>Steuerberaterprüfung · USt · ESt · KSt</p></div>
+  <div class="stats"><div class="stat"><b>${streakNow()}</b><span>${plural(streakNow(),'день','дня','дней')}</span></div><div class="stat"><b>${S.xp}</b><span>XP</span></div></div></header>
+  <div class="goal"><span>Цель дня</span><div class="bar"><i style="width:${Math.min(100,tx/GOAL*100)}%"></i></div><b>${tx}/${GOAL}</b></div>`;
+}
+function renderHome(){
+  let body='';
+  if(tab==='path'){
+    if(S.xp===0)body+=`<div class="card welcome"><div class="eyebrow">Добро пожаловать</div><h2>Учимся с нуля, по шагам</h2>
+      <p>Начни с блока «Как читать законы», потом «Как работает НДС». В каждом блоке 5 уроков: два знакомства с понятиями, нормы, схема целиком и экзамен. Следующий блок открывается после второго урока.</p></div>`;
+    else if(todayXp()===0&&new Date().getHours()>=16)body+=`<div class="card nudge"><p><b>Сегодня ещё не было занятий.</b> Одного урока хватит, чтобы сохранить серию.</p></div>`;
+    COURSES.forEach(c=>{
+      let nextFound=false;
+      body+=`<section class="course"><div class="chead"><h2>${esc(c.t)}</h2><p>${esc(c.sub)}</p></div><div class="path">`+
+      c.units.map((u,i)=>{
+        const un=unlocked(u), d=done(u);
+        let cls=!un?'locked':d>=MAXL?'gold':'';
+        if(un&&d<MAXL&&!nextFound){cls='next';nextFound=true}
+        return `<button class="node ${cls}" data-unit="${u.id}" ${un?'':'aria-disabled="true"'}>
+          <span class="kz"><small>Kz ${String(i+1).padStart(2,'0')}</small>${esc(u.kz)}</span>
+          <span class="ninfo"><h3>${esc(u.t)}</h3><p>${esc(u.sub)}</p>
+          <span class="pips">${Array.from({length:MAXL},(_,k)=>`<i class="${k<d?'on':''}"></i>`).join('')}</span>
+          <em>${!un?'Откроется после 2 уроков предыдущего блока':d>=MAXL?'Пройдено · можно повторять экзамен':'Далее: '+LEVELS[d]}</em></span></button>`}).join('')+`</div></section>`;
+    });
+  }else if(tab==='review'){
+    const n=dueIds().length, cu=caseUnits().length;
+    const red=Object.values(S.items).filter(v=>v.box===0).length;
+    body=`<div class="card"><div class="eyebrow">Интервальное повторение</div><h2>${n?`${n} ${plural(n,'пункт','пункта','пунктов')} на сегодня`:'На сегодня всё повторено'}</h2>
+      <p>${n?'Здесь ошибки и пункты, которые пора освежить: через 1, 3, 7, 14 и 30 дней.':'Пройди урок на пути — завтра здесь появятся пункты для повторения.'}</p>
+      <button class="big-btn" id="startReview" ${n?'':'disabled'}>Повторить</button></div>
+      <div class="card"><div class="eyebrow">Тренировка к экзамену</div><h2>Fälle-Mix</h2>
+      <p>${cu?`Случайные задачи из ${cu} ${plural(cu,'блока','блоков','блоков')}, где ты дошёл до урока «Схема целиком».`:'Откроется, когда в любом блоке пройдёшь 3 урока.'}</p>
+      <button class="big-btn" id="startCases" ${cu?'':'disabled'}>Решать Fälle</button></div>
+      <div class="card"><div class="eyebrow">Статистика</div>
+      <p style="margin-top:8px">Изучено пунктов: <b class="mono">${Object.keys(S.items).length}</b><br>Сейчас в «красной зоне»: <b class="mono">${red}</b><br>Уроков пройдено: <b class="mono">${Object.values(S.units).reduce((a,b)=>a+b,0)}</b></p>
+      <button class="ghost-btn" id="reset">Сбросить прогресс</button></div>`;
+  }else{
+    body=`<p class="note" style="margin-top:16px">Шпаргалка по всем схемам. «Скрыть всё» закрывает пункты: вспомни их сам и открывай по одному касанием.</p>`+
+    COURSES.map(c=>`<div class="chead small"><h2>${esc(c.t)}</h2></div>`+c.units.map(u=>`<details class="sch" data-sch="${u.id}"><summary><h3>${esc(u.t)}</h3><span>${esc(u.sub)}</span></summary>
+      ${u.steps.map((s,i)=>`<div class="row"><span class="n">${u.ordered?String(i+1).padStart(2,'0'):'·'}</span><div class="bd"><div class="k">${esc(s.k)}</div><span class="p">${esc(s.p)}</span><div class="ru">${esc(s.ru)}</div><div class="d">${esc(s.d)}</div></div></div>`).join('')}
+      <div class="schtools"><button class="chip" data-hide="${u.id}">Скрыть всё</button><button class="chip" data-show="${u.id}">Показать всё</button></div></details>`).join('')).join('');
+  }
+  const badge=dueIds().length;
+  app.innerHTML=`<div class="wrap">${header()}${body}</div>
+  <nav class="tabs">
+    <button data-tab="path" class="${tab==='path'?'on':''}">${ICON.path}Путь</button>
+    <button data-tab="review" class="${tab==='review'?'on':''}">${ICON.review}Повторить${badge?`<span class="badge">${badge}</span>`:''}</button>
+    <button data-tab="schemas" class="${tab==='schemas'?'on':''}">${ICON.schema}Схемы</button>
+  </nav>`;
+}
+app.addEventListener('click',e=>{
+  if(L)return;
+  const t=e.target.closest('[data-tab]'); if(t){tab=t.dataset.tab;renderHome();window.scrollTo(0,0);return}
+  const n=e.target.closest('[data-unit]');
+  if(n){const u=unitById(n.dataset.unit);if(!unlocked(u))return;startLesson(buildUnitLesson(u),u);return}
+  if(e.target.closest('#startReview')){const ex=buildReview();if(ex.length)startLesson(ex,null,'review');return}
+  if(e.target.closest('#startCases')){const ex=buildCaseMix();if(ex.length)startLesson(ex,null,'cases');return}
+  const rs=e.target.closest('#reset');
+  if(rs){if(rs.dataset.armed){S=blank();save();renderHome()}else{rs.dataset.armed='1';rs.textContent='Точно сбросить? Нажми ещё раз';rs.classList.add('danger')}return}
+  const h=e.target.closest('[data-hide],[data-show]');
+  if(h){const id=h.dataset.hide||h.dataset.show;document.querySelectorAll(`[data-sch="${id}"] .row`).forEach(r=>r.classList.toggle('hid',!!h.dataset.hide));return}
+  const r=e.target.closest('.row.hid'); if(r)r.classList.remove('hid');
+});
+
+/* ============ LESSON ============ */
+function startLesson(ex,unit,mode){
+  L={ex,pos:0,unit,mode,firstTry:0,graded:new Set(),pick:null,order:[],checked:false,m:null};
+  renderLesson();
+}
+const isInfo=x=>x.kind==='theory'||x.kind==='teach';
+function optBtns(x){
+  return `<div class="opts ${x.tf?'tf':''}">${x.opts.map((o,i)=>{
+    let c='';if(L.checked){if(o===x.ans)c='right';else if(o===L.pick)c='wrong'}else if(o===L.pick)c='sel';
+    return `<button class="opt ${x.mono?'mono-o':''} ${c}" data-opt="${i}" ${L.checked?'disabled':''}>${x.tf?'':`<span class="l">${'ABCD'[i]}</span>`}<span>${esc(o)}</span></button>`}).join('')}</div>`;
+}
+function renderLesson(){
+  const x=L.ex[L.pos]; let inner='', foot='';
+  if(x.kind==='theory'){
+    const t=x.unit.theory[x.k];
+    inner=`<div class="qlabel"><span class="tag">${x.recap?'Напоминание':'Теория'} · ${esc(x.unit.t)}</span></div><div class="q">${esc(t.h)}</div><div class="theory">${t.t}</div>`;
+    foot=`<div class="lfoot"><div class="inner"><button class="big-btn" id="next">Дальше</button></div></div>`;
+  }else if(x.kind==='teach'){
+    const s=x.unit.steps[x.i];
+    inner=`<div class="qlabel"><span class="tag">Новое понятие</span>${x.unit.ordered?`<span class="tag ghost">шаг ${x.i+1} из ${x.unit.steps.length}</span>`:''}</div>
+      <div class="teach"><div class="tk">${esc(s.k)}</div><div class="tp">${esc(s.p)}</div><p class="tru">${esc(s.ru)}</p>
+      <div class="tde"><span class="eyebrow">Для экзамена</span><p>${esc(s.d)}</p></div></div>`;
+    foot=`<div class="lfoot"><div class="inner"><button class="big-btn" id="next">Понятно</button></div></div>`;
+  }else{
+    inner=`<div class="qlabel"><span class="tag">${esc(x.label)}</span></div><div class="q">${esc(x.q)}</div><div class="qhint">${esc(x.hint||'')}</div>`;
+    if(x.kind==='choice')inner+=optBtns(x);
+    else if(x.kind==='gap'){
+      inner+=`<div class="form">${x.unit.steps.map((s,i)=>`<div class="frow ${i===x.gap?'gap':''}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="v">${i===x.gap?(L.pick?esc(L.pick):'?'):esc(s.k)}</span></div>`).join('')}</div>`+optBtns(x);
+    }else if(x.kind==='order'){
+      inner+=`<div class="form">${x.ans.map((_,i)=>{const ti=L.order[i];const v=ti!==undefined?x.toks[ti]:'';
+        return `<div class="frow slot ${v?'filled':'empty'}" data-slot="${i}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="v">${esc(v)}</span></div>`}).join('')}</div>
+      <div class="tokens">${x.toks.map((t,i)=>`<button class="tok ${L.order.includes(i)?'used':''}" data-tok="${i}" ${L.checked?'disabled':''}>${esc(t)}</button>`).join('')}</div>`;
+    }else if(x.kind==='match'){
+      const m=L.m||(L.m={sl:null,sr:null,ok:new Set(),err:0,bad:null});
+      inner+=`<div class="match"><div class="mcol">${x.left.map(k=>`<button class="mi ${m.ok.has(k)?'ok':''} ${m.sl===k?'sel':''} ${m.bad&&m.bad[0]===k?'bad':''}" data-ml="${k}" ${m.ok.has(k)?'disabled':''}>${esc(x.L[k])}</button>`).join('')}</div>
+        <div class="mcol">${x.right.map(k=>`<button class="mi ${x.mono?'mono-o':''} ${m.ok.has(k)?'ok':''} ${m.bad&&m.bad[1]===k?'bad':''}" data-mr="${k}" ${m.ok.has(k)?'disabled':''}>${esc(x.R[k])}</button>`).join('')}</div></div>`;
+    }
+    if(!L.checked){
+      if(x.kind==='match')foot=`<div class="lfoot"><div class="inner"><p class="mhelp">${L.m.err?`Ошибок: ${L.m.err}`:'Найди все пары'}</p></div></div>`;
+      else{const ready=x.kind==='order'?L.order.length===x.ans.length:L.pick!==null;
+        foot=`<div class="lfoot"><div class="inner"><button class="big-btn" id="check" ${ready?'':'disabled'}>Проверить</button></div></div>`;}
+    }else{
+      const ok=L.lastOk;
+      let ex='';
+      if(x.kind==='match')ex=ok?'Все пары найдены без ошибок.':`Все пары найдены, ошибок: ${L.m.err}. Эти понятия ещё встретятся.`;
+      else ex=`${!ok&&x.kind!=='order'&&!x.tf?`Правильно: <b>${esc(x.ans)}</b><br>`:''}${!ok&&x.kind==='order'?'Правильный порядок:<br>':''}${x.expl}${L.requeued?'<br><i>Этот вопрос вернётся в конце урока.</i>':''}`;
+      foot=`<div class="lfoot ${ok?'ok':'bad'}"><div class="inner"><p class="verdict">${ok?pick(['Верно!','Отлично!','Так держать!','Richtig!']):'Не совсем'}</p>
+        <p class="expl">${ex}</p><button class="big-btn" id="next">Дальше</button></div></div>`;
+    }
+  }
+  const pct=L.pos/L.ex.length*100;
+  let el=document.querySelector('.lesson');
+  if(!el){el=document.createElement('div');el.className='lesson';document.body.appendChild(el);el.addEventListener('click',lessonClick)}
+  el.innerHTML=`<div class="lhead"><button class="x" id="quit" aria-label="Выйти">${ICON.x}</button><div class="prog"><i style="width:${pct}%"></i></div><span class="cnt">${L.pos+1}/${L.ex.length}</span></div>
+  <div class="lbody"><div class="inner">${inner}</div></div>${foot}`;
+  const b=el.querySelector('.lbody'); if(b&&!L.keepScroll)b.scrollTop=0; L.keepScroll=false;
+}
+function afterCheck(x,ok){
+  L.lastOk=ok;L.checked=true;L.requeued=false;
+  if(x.id&&!L.graded.has(x.id)){grade(x.id,ok);L.graded.add(x.id);if(ok)L.firstTry++}
+  if(!ok&&x.kind!=='match'&&!x.again){
+    const again=Object.assign({},x,{again:true});
+    if(x.kind==='order')again.toks=shuffle(x.toks);else if(x.opts&&!x.tf)again.opts=shuffle(x.opts);
+    L.ex.push(again);L.requeued=true;
+  }
+  save();renderLesson();
+}
+function lessonClick(e){
+  if(e.target.closest('#quit')||e.target.closest('#finish')){closeLesson();return}
+  const x=L.ex[L.pos];
+  if(e.target.closest('#next')){
+    L.pos++;L.pick=null;L.order=[];L.checked=false;L.m=null;
+    if(L.pos>=L.ex.length)finishLesson();else renderLesson();return;
+  }
+  if(L.checked||isInfo(x))return;
+  const o=e.target.closest('[data-opt]'); if(o){L.pick=x.opts[+o.dataset.opt];L.keepScroll=true;renderLesson();return}
+  const tk=e.target.closest('[data-tok]'); if(tk){const i=+tk.dataset.tok;if(!L.order.includes(i))L.order.push(i);L.keepScroll=true;renderLesson();return}
+  const sl=e.target.closest('[data-slot]'); if(sl){const i=+sl.dataset.slot;if(i<L.order.length)L.order.splice(i,1);L.keepScroll=true;renderLesson();return}
+  const ml=e.target.closest('[data-ml]'); if(ml){L.m.sl=+ml.dataset.ml;L.m.bad=null;L.keepScroll=true;renderLesson();return}
+  const mr=e.target.closest('[data-mr]');
+  if(mr&&L.m.sl!==null){
+    const r=+mr.dataset.mr;
+    if(r===L.m.sl){L.m.ok.add(r);L.m.bad=null}else{L.m.err++;L.m.bad=[L.m.sl,r]}
+    L.m.sl=null;L.keepScroll=true;
+    if(L.m.ok.size===x.L.length){afterCheck(x,L.m.err===0);return}
+    renderLesson();return;
+  }
+  if(e.target.closest('#check')){
+    const ok=x.kind==='order'?L.order.every((ti,i)=>x.toks[ti]===x.ans[i]):L.pick===x.ans;
+    afterCheck(x,ok);
+  }
+}
+function finishLesson(){
+  const n=L.graded.size, acc=n?Math.round(L.firstTry/n*100):100;
+  const gained=10+L.firstTry*2+(L.unit?0:5), t=today();
+  if(S.xpDay!==t){S.xpDay=t;S.dayXp=0}
+  S.dayXp+=gained;S.xp+=gained;
+  if(S.lastDay!==t){S.streak=(S.lastDay===t-1)?S.streak+1:1;S.lastDay=t}
+  let lvName='';
+  if(L.unit){lvName=LEVELS[Math.min(done(L.unit),MAXL-1)];S.units[L.unit.id]=done(L.unit)+1}
+  save();
+  const d=L.unit?done(L.unit):0;
+  let nextTip='';
+  if(L.unit){
+    if(d===2){const nx=L.unit.course.units[L.unit.idx+1];if(nx)nextTip=`Открыт новый блок: «${esc(nx.t)}».`}
+    if(d<MAXL)nextTip+=(nextTip?' ':'')+`Следующий урок: ${LEVELS[d]}.`;
+    else if(d===MAXL)nextTip='Блок пройден полностью. Он остаётся в повторении и в Fälle-Mix.';
+  }
+  document.querySelector('.lesson').innerHTML=`<div class="lbody"><div class="inner result">
+    <div class="stamp">${acc>=90?'Bestanden':acc>=60?'Gut gemacht':'Weiter üben'}</div>
+    <p class="rsub">${L.unit?`${esc(L.unit.t)} · ${lvName}`:L.mode==='cases'?'Fälle-Mix завершён':'Повторение завершено'}</p>
+    <div class="rgrid"><div><b>+${gained}</b><span>XP</span></div><div><b>${acc}%</b><span>с первой попытки</span></div><div><b>${streakNow()}</b><span>серия</span></div></div>
+    ${nextTip?`<p class="note">${nextTip}</p>`:''}
+    <p class="note">${todayXp()>=GOAL?'Цель дня выполнена.':`До цели дня: ${GOAL-todayXp()} XP`}</p>
+  </div></div><div class="lfoot"><div class="inner"><button class="big-btn" id="finish">Продолжить</button></div></div>`;
+}
+function closeLesson(){const el=document.querySelector('.lesson');if(el)el.remove();L=null;renderHome()}
+
+renderHome();
+try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js')}catch(e){}
+
+</script>
+</body>
+</html>
